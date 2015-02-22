@@ -1,0 +1,13 @@
+{% extends "recordings.html" %}
+{% load staticfiles %}
+
+Hello world!
+{% block watch_body %}
+<video width="320" height="240" controls>
+    <source src="{% static file_name %}" type="video/h264">
+</video>
+{% endblock %}
+
+{% block watch_select %}
+{% if file_name == recording.name %}Playing...{% endif %}
+{% endblock %}

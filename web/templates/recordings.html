@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block Recordings %}active{% endblock %}
+
+{% block body %}
+<h1 class="page-header">Recordings</h1>
+{% block watch_body %}{% endblock %}
+<h2 class="sub-header">Latest</h2>
+<div class="table-responsive">
+    <table class="table table-striped">
+    {% for recording in recordings %}
+        <tr>
+        <td><a href="{% url 'home.views.watch' file_name=recording.name %}">{{ recording.name }}</a></td>
+        <td>{% block watch_select %}{% endblock %}</td>
+        <td>{{ recording.motion.time }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endblock %}
+

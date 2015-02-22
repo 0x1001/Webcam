@@ -1,7 +1,13 @@
+{% extends "base.html" %}
 {% load staticfiles %}
 
-Hello world!
+{% block Home %}active{% endblock %}
 
-<video width="320" height="240" controls>
-    <source src="{% static '3.mov' %}" type="video/mjepg">
-</video>
+{% block body %}
+<h1 class="page-header">Home</h1>
+<div class="jumbotron">
+  <h1>Raspberry Pi Web camera</h1>
+  <p>Live stream, motion detection, recordings.</p>
+  <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+</div>
+{% endblock %}

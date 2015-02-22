@@ -7,5 +7,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^$', 'home.views.home'),
+    url(r'^recordings$', 'home.views.recordings'),
+    url(r'^watch/(?P<file_name>[\w\.]+)$', 'home.views.recordings'),
     url(r'^admin/', include(admin.site.urls)),
 )

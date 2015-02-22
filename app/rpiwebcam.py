@@ -1,17 +1,19 @@
-import webcam
+import webcambase
 
 _WAIT_TIME = 0.2
 _MAX_RECORD_TIME = 30
 
 
-class RPiWebcam(webcam.Webcam):
+class RPiWebcam(webcambase.WebcamBase):
     def __init__(self):
         import threading
         import camera
         import motion
+        import storage
 
         self._camera = camera.Camera()
         self._motion = motion.Motion()
+        self._storage = storage.Storage()
         self._exit_event = threading.Event()
 
         super(RPiWebcam, self).__init__()
@@ -28,10 +30,10 @@ class RPiWebcam(webcam.Webcam):
     def _wait_recording(self):
         import datetime
 
-        start = datetime.datetime.now()
+        start = datetime.datetime.utcnow()
         while not self._exit() and self._motion_detected():
             self._camera.wait_recording()
-            stop = datetime.datetime.now()
+            stop = datetime.datetime.utcnow()
 
             if (stop - start).total_seconds() > _MAX_RECORD_TIME:
                 break
@@ -41,7 +43,10 @@ class RPiWebcam(webcam.Webcam):
         return self._motion.detect(img)
 
     def _save_recording(self, recording):
-        print "saved"
+        self._storage.save_recording(recording)
 
     def _exit(self):
-        return self._exit_event.set()
+        return self._exit_event.is_set()
+
+    def _exit_request(self):
+        self._exit_event.set()

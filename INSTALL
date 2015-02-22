@@ -1,0 +1,5 @@
+Requirements:
+- django
+- MP4Box (sudo apt-get install gpac)
+- PIL
+- picamera
