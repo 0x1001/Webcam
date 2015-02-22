@@ -1,10 +1,10 @@
 {% extends "recordings.html" %}
 {% load staticfiles %}
 
-Hello world!
 {% block watch_body %}
-<video width="320" height="240" controls>
-    <source src="{% static file_name %}" type="video/h264">
+<video autoplay controls>
+    <source src="{% static file_name %}" type="video/mp4">
+    <span class="label label-danger">Your browser does not support the video.</span>
 </video>
 {% endblock %}
 
