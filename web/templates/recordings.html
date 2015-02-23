@@ -11,9 +11,8 @@
     <table class="table table-striped">
     {% for recording in recordings %}
         <tr>
-        <td><a href="{% url 'home.views.watch' file_name=recording.name %}">{{ recording.name }}</a></td>
+        <td><a href="{% url 'home.views.watch' file_name=recording.name %}">{{ recording.motion.time|date:"D d M Y H:i" }}</a></td>
         <td>{% block watch_select %}{% endblock %}</td>
-        <td>{{ recording.motion.time }}</td>
         </tr>
     {% endfor %}
     </table>

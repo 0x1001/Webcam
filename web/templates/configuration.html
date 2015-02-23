@@ -7,9 +7,9 @@
 <h1 class="page-header">Configuration</h1>
 <form action="{% static 'home.views.set_config' %}" method="get">
 <table>
-<tr><th>Video Width</th><td><input type="text" value="{{ config.width }}" class="form-control" placeholder="800"></td></tr>
-<tr><th>Video Height</th><td><input type="text" value="{{ config.height }}" class="form-control" placeholder="600"></td></tr>
-<tr><th>Horizontal flip</th><td><input type="checkbox" class="form-control" {% if config.hflip %}checked{% endif %}></td></tr>
+<tr><th>Video Width</th><td align="left"><input type="text" value="{{ config.width }}" class="form-control" placeholder="800"></td></tr>
+<tr><th>Video Height</th><td align="left"><input type="text" value="{{ config.height }}" class="form-control" placeholder="600"></td></tr>
+<tr><th>Horizontal flip</th><td align="left"><input type="checkbox" class="form-control" {% if config.hflip %}checked{% endif %}></td></tr>
 </table>
 
 <input class="btn btn-default" type="submit" value="Submit">

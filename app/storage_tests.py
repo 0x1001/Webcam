@@ -19,7 +19,6 @@ class Test_Storage(unittest.TestCase):
 
     def test_save_recording(self):
         import storage
-        import StringIO
 
         self._create_env()
 
@@ -28,7 +27,7 @@ class Test_Storage(unittest.TestCase):
                 return path
 
         s = TStorage()
-        s.save_recording(StringIO.StringIO("dummy"))
+        s.save_recording("dummy")
 
 
 if __name__ == "__main__":

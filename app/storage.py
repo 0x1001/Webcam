@@ -12,7 +12,7 @@ class Storage(object):
         name = now.strftime("%Y%m%d%H%M%S")
         output_path = self._output_path(name)
 
-        self._save(recording.getvalue(), output_path)
+        self._save(recording, output_path)
         file_name = self._convert(output_path)
         self._add_to_database(file_name, now)
 

@@ -1,44 +1,30 @@
-_THRESHOLD = 1
-_CMP_SIZE = (320, 240)
+import picamera.array
+
+_MAGNITUDE = 10      # If there're more than 10 vectors with a magnitude greater
+_VECTOR_COUNT = 60  # than 60, then say we've detected motion
 
 
-class Motion(object):
-    def __init__(self):
-        self._previous_contents = None
+class Motion(picamera.array.PiMotionAnalysis):
+    def __init__(self, *args, **kwargs):
+        import threading
 
-    def detect(self, data):
-        from PIL import Image
+        super(Motion, self).__init__(*args, **kwargs)
 
-        basic_img = self._crop(Image.open(data))
-        gray_img = self._gray_scale(basic_img)
-        float_img = self._get_float_data(gray_img)
-        norm_img = self._normalize(float_img)
+        self._event = threading.Event()
 
-        if self._previous_contents is None:
-            value = 0.0
-            self._previous_contents = norm_img
-        else:
-            value = self._diff(self._previous_contents, norm_img)
-            self._previous_contents = norm_img
+    def analyse(self, a):
+        import numpy as np
 
-        return value > _THRESHOLD
+        a = np.sqrt(
+            np.square(a['x'].astype(np.float)) +
+            np.square(a['y'].astype(np.float))
+            ).clip(0, 255).astype(np.uint8)
 
-    def _crop(self, image):
-        image.thumbnail(_CMP_SIZE)
-        return image
+        if (a > _VECTOR_COUNT).sum() > _MAGNITUDE:
+            self._event.set()
 
-    def _gray_scale(self, image):
-        return image.convert("L")
+    def event(self):
+        return self._event
 
-    def _get_float_data(self, image):
-        return image.convert("F").getdata()
-
-    def _normalize(self, data):
-        return [d / 255 for d in data]
-
-    def _diff(self, data1, data2):
-        if len(data1) != len(data2):
-            raise Exception("Size don't match!")
-
-        matt_norm = sum([abs(data1[i] - data2[i]) for i in range(len(data1))])
-        return matt_norm / len(data1) * 100
+    def reset(self):
+        self._event.clear()
