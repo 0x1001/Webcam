@@ -3,14 +3,10 @@ import unittest
 
 class Test_Storage(unittest.TestCase):
     def _create_env(self):
-        from os import environ
         from os.path import join, dirname, abspath
         import sys
-        import django
 
-        environ['DJANGO_SETTINGS_MODULE'] = 'webcam.settings'
         sys.path.append(join(dirname(dirname(abspath(__file__))), "web"))
-        django.setup()
 
     def test_basic(self):
         import storage
@@ -23,8 +19,11 @@ class Test_Storage(unittest.TestCase):
         self._create_env()
 
         class TStorage(storage.Storage):
-            def _convert(self, path):
-                return path
+            def _convert(self, *args):
+                pass
+
+            def _add_to_database(self, *args):
+                pass
 
         s = TStorage()
         s.save_recording("dummy")

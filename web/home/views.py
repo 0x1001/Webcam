@@ -8,11 +8,11 @@ def home(request):
 
 
 def recordings(request):
-    return render(request, 'recordings.html', {"recordings": Recording.objects.all()})
+    return render(request, 'recordings.html', {"recordings": Recording.objects.order_by('-motion__time').all()})
 
 
 def watch(request, file_name):
-    return render(request, 'watch.html', {"recordings": Recording.objects.all(),
+    return render(request, 'watch.html', {"recordings": Recording.objects.order_by('-motion__time').all(),
                                           "file_name": file_name})
 
 
