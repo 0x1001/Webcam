@@ -15,11 +15,11 @@ class Storage(object):
         now = now.replace(tzinfo=timezone.utc)
         name = now.strftime("%Y%m%d%H%M%S")
 
-        mp4_path, h264_path = self._output_path(name)
+        mp4_path, h264_path = self._recording_output_path(name)
 
         self._save(recording, h264_path)
         self._convert(h264_path, mp4_path)
-        self._add_to_database(os.path.basename(mp4_path), now)
+        self._add_recording_to_database(os.path.basename(mp4_path), now)
 
         os.unlink(h264_path)
 
@@ -30,16 +30,20 @@ class Storage(object):
 
     def delete_recording(self, name):
         self._delete(name)
-        self._remove_from_database(name)
+        self._remove_recording_from_database(name)
+
+    def save_stream(self, photo):
+        with open(self._photo_output_path("stream"), "wb") as out:
+            out.write(photo)
 
     def _delete(self, name):
         import os
 
-        path, _ = self._output_path(os.path.splitext(name)[0])
+        path, _ = self._recording_output_path(os.path.splitext(name)[0])
         if os.path.isfile(path):
             os.path.unlink(path)
 
-    def _remove_from_database(self, name):
+    def _remove_recording_from_database(self, name):
         from home.models import remove_recording
 
         remove_recording(name)
@@ -58,12 +62,12 @@ class Storage(object):
         if ret != 0:
             raise StorageExcpetion("Convertion to mp4 failed on " + src)
 
-    def _add_to_database(self, file_name, time):
+    def _add_recording_to_database(self, file_name, time):
         from home.models import add_recording
 
         add_recording(file_name, time)
 
-    def _output_path(self, name):
+    def _recording_output_path(self, name):
         import os
         from webcam import settings
 
@@ -71,6 +75,12 @@ class Storage(object):
         h264_path = os.path.join(settings.STATICFILES_DIRS[0], name + ".h264")
 
         return mp4_path, h264_path
+
+    def _photo_output_path(self, name):
+        import os
+        from webcam import settings
+
+        return os.path.join(settings.STATICFILES_DIRS[1], name + ".jpeg")
 
     def _init_django(self):
         from os import environ

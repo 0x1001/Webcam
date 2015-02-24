@@ -29,23 +29,29 @@ class RPiWebcam(webcambase.WebcamBase):
     def _wait(self, time=_WAIT_TIME):
         self._exit_event.wait(time)
 
-    def _start_recording(self):
-        return self._camera.start_recording()
+    def _recording_start(self):
+        return self._camera.recording_start()
 
-    def _stop_recording(self):
-        self._camera.stop_recording()
+    def _recording_stop(self):
+        self._camera.recording_stop()
 
-    def _wait_recording(self):
+    def _recording_wait(self):
         import datetime
 
         start = datetime.datetime.utcnow()
         while True:
-            self._camera.wait_recording()
+            self._camera.recording_wait()
             stop = datetime.datetime.utcnow()
 
             too_long = (stop - start).total_seconds() > _MAX_RECORD_TIME
-            if too_long or self._exit() or not self._motion_detected():
+            if too_long or self._exit():
                 break
+
+    def _take_photo(self):
+        return self._camera.photo_capture()
+
+    def _save_stream(self, photo):
+        self._storage.save_stream(photo)
 
     def _save_recording(self, recording):
         self._storage.save_recording(recording)

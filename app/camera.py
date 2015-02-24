@@ -82,7 +82,7 @@ class Camera(object):
                              splitter_port=self._photo_channel)
 
         stream.seek(0)
-        return stream
+        return stream.getvalue()
 
     def _process_motion_recording(self, stream):
         import picamera

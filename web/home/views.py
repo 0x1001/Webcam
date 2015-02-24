@@ -18,3 +18,7 @@ def watch(request, file_name):
 
 def get_config(request):
     return render(request, 'configuration.html', {"config": Configuration.objects.first()})
+
+
+def stream(request):
+    return render(request, 'stream.html')

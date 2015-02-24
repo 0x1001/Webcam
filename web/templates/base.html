@@ -43,6 +43,7 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="{% block Home %}{% endblock %}"><a href="{% url 'home.views.home' %}">Home</a></li>
+            <li class="{% block Stream %}{% endblock %}"><a href="{% url 'home.views.stream' %}">Live</a></li>
             <li class="{% block Recordings %}{% endblock %}"><a href="{% url 'home.views.recordings' %}">Recordings</a></li>
             <li class="{% block Movements %}{% endblock %}"><a href="#">Movements</a></li>
             <li class="{% block Configuration %}{% endblock %}"><a href="{% url 'home.views.get_config' %}">Configuration</a></li>

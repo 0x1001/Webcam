@@ -22,12 +22,17 @@ class Test_Storage(unittest.TestCase):
             def _convert(self, *args):
                 pass
 
-            def _add_to_database(self, *args):
+            def _add_recording_to_database(self, *args):
                 pass
 
         s = TStorage()
         s.save_recording("dummy")
 
+    def test_stream_photo(self):
+        import storage
+
+        s = storage.Storage()
+        s.save_stream("dummy")
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,12 @@ class WebcamBase(object):
                 recording = self._motion_record()
                 self._save_recording(recording)
 
+    def stream(self):
+        while not self._exit():
+            photo = self._take_photo()
+            self._save_stream(photo)
+            self._wait(10)
+
     def clean(self):
         while not self._exit():
             self._delete_oldest()
