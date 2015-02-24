@@ -8,15 +8,14 @@ class WebcamBase(object):
 
     def clean(self):
         while not self._exit():
-            if self._full_history():
-                self._delete_oldest()
-            self._wait()
+            self._delete_oldest()
+            self._wait(600)
 
     def config(self):
         while not self._exit():
             if self._config_changed():
                 self._config_load()
-            self._wait()
+            self._wait(2)
 
     def close(self):
         self._exit_request()

@@ -1,3 +1,12 @@
 from django.test import TestCase
+from home.models import get_recordings
+from home.models import remove_recording
 
-# Create your tests here.
+
+class FunctionTests(TestCase):
+
+    def test_get_recordings(self):
+        self.assertEqual(list(get_recordings()), [])
+
+    def test_remove_recording(self):
+        remove_recording("test")

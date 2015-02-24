@@ -7,7 +7,7 @@ class Motion(models.Model):
 
 class Recording(models.Model):
     name = models.CharField(max_length=20)
-    motion = models.ForeignKey(Motion)
+    time = models.DateTimeField()
 
 
 class Configuration(models.Model):
@@ -17,8 +17,13 @@ class Configuration(models.Model):
 
 
 def add_recording(file_name, time):
-    m = Motion(time=time)
-    m.save()
-
-    r = Recording(name=file_name, motion=m)
+    r = Recording(name=file_name, time=time)
     r.save()
+
+
+def get_recordings():
+    return Recording.objects.order_by('-time').all()
+
+
+def remove_recording(name):
+    Recording.objects.filter(name=name).delete()

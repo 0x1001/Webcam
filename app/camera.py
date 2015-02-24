@@ -21,7 +21,6 @@ class Camera(object):
         self._recording_flag = False
 
         self._photo_channel = 2
-        self._photo_flag = False
 
     def motion_start_detection(self):
         import picamera
@@ -44,24 +43,21 @@ class Camera(object):
     def motion_record(self, exit_event):
         record_time = _MOTION_RECORDING_TIME - 5
         delta = 1
-        self._motion_recording_flag = True
 
-        self._led_on()
+        self._led_on(motion_recording=True)
         while record_time > 0 and not exit_event.is_set():
             self._camera.wait_recording(delta, splitter_port=self._motion_channel)
             record_time -= delta
 
         self._camera.stop_recording(splitter_port=self._motion_channel)
-        self._motion_recording_flag = False
-        self._led_off()
+        self._led_off(motion_recording=True)
 
         return self._process_motion_recording(self._motion_recording)
 
     def recording_start(self):
         import io
 
-        self._recording_flag = True
-        self._led_on()
+        self._led_on(recording=True)
         self._recording = io.BytesIO()
         self._camera.start_recording(self._recording,
                                      format='h264',
@@ -71,25 +67,20 @@ class Camera(object):
         self._camera.wait_recording(time, splitter_port=self._recording_channel)
 
     def recording_stop(self):
-        self._camera.led = False
         self._camera.stop_recording(splitter_port=self._recording_channel)
-        self._recording_flag = False
-        self._led_off()
+        self._led_off(recording=True)
 
         return self._recording
 
     def photo_capture(self):
         import io
 
-        self._photo_flag = True
-        self._led_on()
         stream = io.BytesIO()
         self._camera.capture(stream,
                              format='jpeg',
                              use_video_port=True,
                              splitter_port=self._photo_channel)
-        self._photo_flag = False
-        self._led_off()
+
         stream.seek(0)
         return stream
 
@@ -103,11 +94,24 @@ class Camera(object):
 
         return stream.read()
 
-    def _led_on(self):
-        self._camera.led = True
+    def _led_on(self, recording=False, motion_recording=False):
+        if recording or motion_recording:
+            self._camera.led = True
 
-    def _led_off(self):
-        if not self._recording_flag and not self._motion_recording_flag and not self._photo_flag:
+        if recording:
+            self._recording_flag = True
+
+        if motion_recording:
+            self._motion_recording_flag = True
+
+    def _led_off(self, recording=False, motion_recording=False):
+        if recording:
+            self._recording_flag = False
+
+        if motion_recording:
+            self._motion_recording_flag = False
+
+        if not self._recording_flag and not self._motion_recording_flag:
             self._camera.led = False
 
     def __del__(self):

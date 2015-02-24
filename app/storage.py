@@ -3,6 +3,9 @@ class StorageExcpetion(Exception):
 
 
 class Storage(object):
+    def __init__(self):
+        self._init_django()
+
     def save_recording(self, recording):
         import datetime
         import timezone
@@ -19,6 +22,27 @@ class Storage(object):
         self._add_to_database(os.path.basename(mp4_path), now)
 
         os.unlink(h264_path)
+
+    def get_all_recordings(self):
+        from home.models import get_recordings
+
+        return list(get_recordings())
+
+    def delete_recording(self, name):
+        self._delete(name)
+        self._remove_from_database(name)
+
+    def _delete(self, name):
+        import os
+
+        path, _ = self._output_path(os.path.splitext(name)[0])
+        if os.path.isfile(path):
+            os.path.unlink(path)
+
+    def _remove_from_database(self, name):
+        from home.models import remove_recording
+
+        remove_recording(name)
 
     def _save(self, data, output_path):
         with open(output_path, "wb") as output:
@@ -47,3 +71,13 @@ class Storage(object):
         h264_path = os.path.join(settings.STATICFILES_DIRS[0], name + ".h264")
 
         return mp4_path, h264_path
+
+    def _init_django(self):
+        from os import environ
+        from os.path import join, dirname, abspath
+        import sys
+        import django
+
+        environ['DJANGO_SETTINGS_MODULE'] = 'webcam.settings'
+        sys.path.append(join(dirname(dirname(abspath(__file__))), "web"))
+        django.setup()
