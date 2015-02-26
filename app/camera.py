@@ -1,5 +1,10 @@
 _RESOLUTION = (1280, 720)
 _MOTION_RECORDING_TIME = 20
+_FRAMERATE = 30
+
+
+class CameraException(Exception):
+    pass
 
 
 class Camera(object):
@@ -7,14 +12,16 @@ class Camera(object):
         import picamera
         import motion
 
-        self._camera = picamera.PiCamera()
-        self._camera.resolution = _RESOLUTION
+        self._camera = picamera.PiCamera(framerate=_FRAMERATE, resolution=_RESOLUTION)
         self._camera.led = False
 
         self._motion_recording = None
-        self._motion_detector = motion.Motion(self._camera)
         self._motion_channel = 1
         self._motion_recording_flag = False
+        self._motion_detector = motion.Motion(self._camera)
+        self._motion_recording = picamera.PiCameraCircularIO(self._camera,
+                                                             splitter_port=self._motion_channel,
+                                                             seconds=_MOTION_RECORDING_TIME)
 
         self._recording = None
         self._recording_channel = 0
@@ -23,13 +30,12 @@ class Camera(object):
         self._photo_channel = 2
 
     def motion_start_detection(self):
-        import picamera
-
-        self._motion_recording = picamera.PiCameraCircularIO(self._camera, seconds=_MOTION_RECORDING_TIME)
         self._camera.start_recording(self._motion_recording,
                                      format='h264',
                                      splitter_port=self._motion_channel,
                                      motion_output=self._motion_detector)
+
+        self._camera.wait_recording(1, splitter_port=self._motion_channel)
 
     def motion_wait(self, exit_event):
         import orevent
@@ -41,7 +47,9 @@ class Camera(object):
         return not exit_event.is_set()
 
     def motion_record(self, exit_event):
-        record_time = _MOTION_RECORDING_TIME - 5
+        import recording
+
+        record_time = _MOTION_RECORDING_TIME - _MOTION_RECORDING_TIME / 4
         delta = 1
 
         self._led_on(motion_recording=True)
@@ -52,7 +60,13 @@ class Camera(object):
         self._camera.stop_recording(splitter_port=self._motion_channel)
         self._led_off(motion_recording=True)
 
-        return self._process_motion_recording(self._motion_recording)
+        stream, recording_time = self._process_motion_recording(self._motion_recording)
+        rec = recording.Recording(stream, recording_time)
+
+        if recording_time > _MOTION_RECORDING_TIME:
+            rec.cut(recording_time - _MOTION_RECORDING_TIME, recording_time)
+
+        return rec
 
     def recording_start(self):
         import io
@@ -69,8 +83,9 @@ class Camera(object):
     def recording_stop(self):
         self._camera.stop_recording(splitter_port=self._recording_channel)
         self._led_off(recording=True)
+        self._recording.seek(0)
 
-        return self._recording
+        return self._recording.read()
 
     def photo_capture(self):
         import io
@@ -82,17 +97,21 @@ class Camera(object):
                              splitter_port=self._photo_channel)
 
         stream.seek(0)
-        return stream.getvalue()
+        return stream.read()
 
     def _process_motion_recording(self, stream):
         import picamera
 
+        f_count = 0
+        first_sps_header = None
         for frame in stream.frames:
-            if frame.frame_type == picamera.PiVideoFrameType.sps_header:
-                stream.seek(frame.position)
-                break
+            f_count += 1
+            if first_sps_header is None and frame.frame_type == picamera.PiVideoFrameType.sps_header:
+                first_sps_header = frame.position
 
-        return stream.read()
+        recording_time = f_count / _FRAMERATE
+        stream.seek(first_sps_header)
+        return stream.read(), recording_time
 
     def _led_on(self, recording=False, motion_recording=False):
         if recording or motion_recording:

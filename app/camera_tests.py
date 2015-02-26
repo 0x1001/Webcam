@@ -50,5 +50,14 @@ class Test_Camera(unittest.TestCase):
         cam.motion_wait(e)
         cam.motion_record(e)
 
+    def test_recording(self):
+        import camera
+
+        cam = camera.Camera()
+        cam.recording_start()
+        cam.recording_wait(0.5)
+        cam.recording_stop()
+
+
 if __name__ == "__main__":
     unittest.main()

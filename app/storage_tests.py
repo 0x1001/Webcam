@@ -2,6 +2,14 @@ import unittest
 
 
 class Test_Storage(unittest.TestCase):
+    def _prep_recording(self):
+        import recording
+
+        with open("test_data/test.h264", "rb") as fp:
+            s = fp.read()
+
+        return recording.Recording(s, 2)
+
     def _create_env(self):
         from os.path import join, dirname, abspath
         import sys
@@ -17,18 +25,16 @@ class Test_Storage(unittest.TestCase):
         import storage
 
         self._create_env()
+        r = self._prep_recording()
 
         class TStorage(storage.Storage):
-            def _convert(self, *args):
-                pass
-
             def _add_recording_to_database(self, *args):
                 pass
 
         s = TStorage()
-        s.save_recording("dummy")
+        s.save_recording(r)
 
-    def test_stream_photo(self):
+    def test_save_stream(self):
         import storage
 
         s = storage.Storage()
