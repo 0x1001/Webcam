@@ -37,6 +37,14 @@ class Recording(object):
         if os.path.isfile(self.path):
             os.unlink(self.path)
 
+    def save(self, path):
+        import shutil
+
+        shutil.copy(self.path, path)
+        self.remove(self.path)
+
+        self.path = path
+
     def _set_attrs(self):
         import tempfile
         import datetime
