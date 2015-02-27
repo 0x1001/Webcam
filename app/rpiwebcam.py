@@ -14,33 +14,34 @@ class RPiWebcam(webcambase.WebcamBase):
         self._camera = camera.Camera()
         self._storage = storage.Storage()
         self._exit_event = threading.Event()
+        self._photo_lock = threading.RLock()
 
         super(RPiWebcam, self).__init__()
 
-    def _motion_start_detection(self):
-        self._camera.motion_start_detection()
+    def _start_motion_detection(self):
+        self._camera.start_motion_detection()
 
-    def _motion_wait(self):
-        return self._camera.motion_wait(self._exit_event)
+    def _wait_for_motion(self):
+        return self._camera.wait_for_motion(self._exit_event)
 
-    def _motion_record(self):
-        return self._camera.motion_record(self._exit_event)
+    def _record_motion(self):
+        return self._camera.record_motion(self._exit_event)
 
     def _wait(self, time=_WAIT_TIME):
         self._exit_event.wait(time)
 
-    def _recording_start(self):
-        return self._camera.recording_start()
+    def _start_recording(self):
+        return self._camera.start_recording()
 
-    def _recording_stop(self):
-        self._camera.recording_stop()
+    def _stop_recording(self):
+        self._camera.stop_recording()
 
-    def _recording_wait(self):
+    def _wait_for_recording(self):
         import datetime
 
         start = datetime.datetime.utcnow()
         while True:
-            self._camera.recording_wait()
+            self._camera.wait_for_recording()
             stop = datetime.datetime.utcnow()
 
             too_long = (stop - start).total_seconds() > _MAX_RECORD_TIME
@@ -48,13 +49,23 @@ class RPiWebcam(webcambase.WebcamBase):
                 break
 
     def _take_photo(self):
-        return self._camera.photo_capture()
+        with self._photo_lock:
+            return self._camera.take_photo()
+
+    def _save_photo(self, photo):
+        self._storage.save_photo(photo)
 
     def _save_stream(self, photo):
         self._storage.save_stream(photo)
 
-    def _save_recording(self, recording):
-        self._storage.save_recording(recording)
+    def _save_recording(self, recording, photo):
+        self._storage.save_photo(photo)
+        self._storage.save_recording(recording, photo)
+
+    def _save_motion(self, recording, photo):
+        self._storage.save_photo(photo)
+        self._storage.save_recording(recording, photo)
+        self._storage.save_motion(recording, photo)
 
     def _delete_oldest(self):
         recordings = self._storage.get_all_recordings()

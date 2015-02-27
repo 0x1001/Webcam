@@ -29,7 +29,7 @@ class Camera(object):
 
         self._photo_channel = 2
 
-    def motion_start_detection(self):
+    def start_motion_detection(self):
         self._camera.start_recording(self._motion_recording,
                                      format='h264',
                                      splitter_port=self._motion_channel,
@@ -37,7 +37,7 @@ class Camera(object):
 
         self._camera.wait_recording(1, splitter_port=self._motion_channel)
 
-    def motion_wait(self, exit_event):
+    def wait_for_motion(self, exit_event):
         import orevent
 
         self._motion_detector.reset()
@@ -46,7 +46,7 @@ class Camera(object):
         ore.close()
         return not exit_event.is_set()
 
-    def motion_record(self, exit_event):
+    def record_motion(self, exit_event):
         import recording
 
         record_time = _MOTION_RECORDING_TIME - _MOTION_RECORDING_TIME / 4
@@ -68,7 +68,7 @@ class Camera(object):
 
         return rec
 
-    def recording_start(self):
+    def start_recording(self):
         import io
 
         self._led_on(recording=True)
@@ -77,18 +77,19 @@ class Camera(object):
                                      format='h264',
                                      splitter_port=self._recording_channel)
 
-    def recording_wait(self, time=5):
+    def wait_for_recording(self, time=5):
         self._camera.wait_recording(time, splitter_port=self._recording_channel)
 
-    def recording_stop(self):
+    def stop_recording(self):
         self._camera.stop_recording(splitter_port=self._recording_channel)
         self._led_off(recording=True)
         self._recording.seek(0)
 
         return self._recording.read()
 
-    def photo_capture(self):
+    def take_photo(self):
         import io
+        import photo
 
         stream = io.BytesIO()
         self._camera.capture(stream,
@@ -97,7 +98,7 @@ class Camera(object):
                              splitter_port=self._photo_channel)
 
         stream.seek(0)
-        return stream.read()
+        return photo.Photo(stream.read())
 
     def _process_motion_recording(self, stream):
         import picamera

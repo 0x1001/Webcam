@@ -1,7 +1,18 @@
 import unittest
+import storage
 
 
 class Test_Storage(unittest.TestCase):
+    class TStorage(storage.Storage):
+        def _add_recording_to_database(self, *args):
+            pass
+
+        def _add_photo_to_database(self, *args):
+            pass
+
+        def _add_motion_to_database(self, *args):
+            pass
+
     def _prep_recording(self):
         import recording
 
@@ -10,6 +21,14 @@ class Test_Storage(unittest.TestCase):
 
         return recording.Recording(s, 2)
 
+    def _prep_photo(self):
+        import photo
+
+        with open("test_data/sample1.jpg", "rb") as fp:
+            s = fp.read()
+
+        return photo.Photo(s)
+
     def _create_env(self):
         from os.path import join, dirname, abspath
         import sys
@@ -17,22 +36,17 @@ class Test_Storage(unittest.TestCase):
         sys.path.append(join(dirname(dirname(abspath(__file__))), "web"))
 
     def test_basic(self):
-        import storage
-
         storage.Storage()
 
     def test_save_recording(self):
-        import storage
-
         self._create_env()
         r = self._prep_recording()
+        p = self._prep_photo()
+        s = self.TStorage()
 
-        class TStorage(storage.Storage):
-            def _add_recording_to_database(self, *args):
-                pass
-
-        s = TStorage()
-        s.save_recording(r)
+        s.save_recording(r, p)
+        s.save_photo(p)
+        s.save_motion(r, p)
 
     def test_save_stream(self):
         import storage

@@ -1,8 +1,10 @@
 - Configuration via page
-- Add thumbnail to recording
 - Autoupdate page when new recording is available
 - Add Raspberry pi logo
 - Add movements list to page
 - Write short help page
-- Fix page size instability when browsing between pages
 - Add recording time
+- Add jpeg stream
+- Add ability to record
+- Add ability to take photo
+- Add ability to take time lapse

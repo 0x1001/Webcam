@@ -1,10 +1,11 @@
 class WebcamBase(object):
     def record_motion(self):
         while not self._exit():
-            self._motion_start_detection()
-            if self._motion_wait():
-                recording = self._motion_record()
-                self._save_recording(recording)
+            self._start_motion_detection()
+            if self._wait_for_motion():
+                photo = self._take_photo()
+                recording = self._record_motion()
+                self._save_motion(recording, photo)
 
     def stream(self):
         while not self._exit():

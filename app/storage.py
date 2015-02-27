@@ -6,10 +6,9 @@ class Storage(object):
     def __init__(self):
         self._init_django()
 
-    def save_recording(self, recording):
-        self._save(recording)
-        self._add_recording_to_database(recording)
-        recording.remove()
+    def save_recording(self, recording, photo):
+        self._save_recording(recording)
+        self._add_recording_to_database(recording, photo)
 
     def get_all_recordings(self):
         from home.models import get_recordings
@@ -19,6 +18,13 @@ class Storage(object):
     def delete_recording(self, name):
         self._delete(name)
         self._remove_recording_from_database(name)
+
+    def save_photo(self, photo):
+        self._save_photo(photo)
+        self._add_photo_to_database(photo)
+
+    def save_motion(self, recording, photo):
+        self._add_motion_to_database(recording, photo)
 
     def save_stream(self, photo):
         with open(self._photo_output_path("stream"), "wb") as out:
@@ -37,16 +43,31 @@ class Storage(object):
 
         remove_recording(name)
 
-    def _save(self, recording):
-        import shutil
+    def _save_recording(self, recording):
         from webcam import settings
 
-        shutil.copy(recording.path, settings.STATICFILES_DIRS[0])
+        recording.save(settings.STATICFILES_DIRS[0])
 
-    def _add_recording_to_database(self, recording):
+    def _save_photo(self, photo):
+        from webcam import settings
+
+        photo.save(settings.STATICFILES_DIRS[1])
+        photo.save_thumbnail(settings.STATICFILES_DIRS[1])
+
+    def _add_recording_to_database(self, recording, photo):
         from home.models import add_recording
 
-        add_recording(recording.name, recording.time)
+        add_recording(recording.name, recording.time, recording.lenght, photo.name)
+
+    def _add_photo_to_database(self, photo):
+        from home.models import add_photo
+
+        add_photo(photo.name, photo.thumbnail_name, photo.time)
+
+    def _add_motion_to_database(self, recording, photo):
+        from home.models import add_movement
+
+        add_movement(photo.time, recording.name, photo.name)
 
     def _photo_output_path(self, name):
         import os

@@ -39,11 +39,15 @@ class Recording(object):
 
     def save(self, path):
         import shutil
+        import os
 
         shutil.copy(self.path, path)
-        self.remove(self.path)
+        self.remove()
 
-        self.path = path
+        if os.path.isfile(path):
+            self.path = path
+        else:
+            self.path = os.path.join(path, self.name)
 
     def _set_attrs(self):
         import tempfile
