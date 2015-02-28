@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block Movements %}active{% endblock %}
+
+{% block body %}
+<h1 class="page-header">Movements</h1>
+<div class="row">
+{% for movement in movements %}
+  <div class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+      <img src="{% static movement.photo.name %}">
+      <div class="caption">
+        <h3>{{ movement.time|date:"l d M Y H:i" }}</h3>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% endblock %}

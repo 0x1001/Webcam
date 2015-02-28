@@ -45,6 +45,10 @@ def get_recordings():
     return Recording.objects.order_by('-time').all()
 
 
+def get_movements():
+    return Movement.objects.order_by('-time').all()
+
+
 def remove_recording(name):
-    #Recording.objects.filter(name=name).delete()
-    raise NotImplemented
+    Movement.objects.filter(recording__name=name).update(recording="norecording")
+    Recording.objects.filter(name=name).delete()

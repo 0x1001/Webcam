@@ -1,19 +1,19 @@
 from django.shortcuts import render
 from home.models import Configuration
 from home.models import get_recordings
+from home.models import get_movements
 
 
 def home(request):
     return render(request, 'home.html')
 
 
-def recordings(request):
-    return render(request, 'recordings.html', {"recordings": get_recordings()})
+def recordings(request, recording=None):
+    return render(request, 'recordings.html', {"recordings": get_recordings(), "recording": recording})
 
 
-def watch(request, file_name):
-    return render(request, 'watch.html', {"recordings": get_recordings(),
-                                          "file_name": file_name})
+def movements(request):
+    return render(request, 'movements.html', {"movements": get_movements()})
 
 
 def get_config(request):

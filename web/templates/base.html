@@ -3,6 +3,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <style>
+      html {
+        overflow-y: scroll; /* Fix for flickering menu bar */
+      }
+    </style>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,7 +15,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>RPi Web Camera</title>
+    <title>Raspberry Pi Web camera</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -30,13 +35,13 @@
   <body>
     <div class="container">
       <div class="masthead">
-        <h3 class="text-muted">RPi Web Camera</h3>
+        <h3 class="text-muted">Raspberry Pi Web camera</h3>
         <nav>
           <ul class="nav nav-justified">
             <li class="{% block Home %}{% endblock %}"><a href="{% url 'home.views.home' %}">Home</a></li>
             <li class="{% block Stream %}{% endblock %}"><a href="{% url 'home.views.stream' %}">Live</a></li>
             <li class="{% block Recordings %}{% endblock %}"><a href="{% url 'home.views.recordings' %}">Recordings</a></li>
-            <li class="{% block Movements %}{% endblock %}"><a href="#">Movements</a></li>
+            <li class="{% block Movements %}{% endblock %}"><a href="{% url 'home.views.movements' %}">Movements</a></li>
             <li class="{% block Configuration %}{% endblock %}"><a href="{% url 'home.views.get_config' %}">Configuration</a></li>
             <li><a href="#">About</a></li>
           </ul>
