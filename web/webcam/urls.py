@@ -8,5 +8,6 @@ urlpatterns = patterns('',
     url(r'^movements$', 'home.views.movements'),
     url(r'^configuration$', 'home.views.get_config'),
     url(r'^stream$', 'home.views.stream'),
+    url(r'^stream_data$', 'home.views.stream_data'),
     url(r'^admin/', include(admin.site.urls)),
 )

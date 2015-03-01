@@ -3,60 +3,53 @@ import unittest
 
 class Test_Camera(unittest.TestCase):
 
-    def test_stop_start(self):
+    def setUp(self):
         import camera
-        camera.Camera()
+        self.cam = camera.Camera()
+
+    def tearDown(self):
+        self.cam.close()
 
     def test_record(self):
         import time
-        import camera
 
-        cam = camera.Camera()
-        cam.recording_start()
+        self.cam.start_recording()
         time.sleep(0.5)
-        cam.recording_stop()
+        self.cam.stop_recording()
 
     def test_capture(self):
-        import camera
         import time
 
-        cam = camera.Camera()
-        cam.recording_start()
+        self.cam.start()
+        self.cam.start_recording()
         time.sleep(0.5)
-        cam.photo_capture()
+        self.cam.take_photo()
         time.sleep(0.5)
-        cam.recording_stop()
+        self.cam.stop_recording()
 
     def test_motion_detection(self):
-        import camera
         import threading
 
         e = threading.Event()
         e.set()
 
-        cam = camera.Camera()
-        cam.motion_start_detection()
-        cam.motion_wait(e)
+        self.cam.start_motion_detection()
+        self.cam.wait_for_motion(e)
 
     def test_motion_recording(self):
-        import camera
         import threading
 
         e = threading.Event()
         e.set()
 
-        cam = camera.Camera()
-        cam.motion_start_detection()
-        cam.motion_wait(e)
-        cam.motion_record(e)
+        self.cam.start_motion_detection()
+        self.cam.wait_for_motion(e)
+        self.cam.record_motion(e)
 
     def test_recording(self):
-        import camera
-
-        cam = camera.Camera()
-        cam.recording_start()
-        cam.recording_wait(0.5)
-        cam.recording_stop()
+        self.cam.start_recording()
+        self.cam.wait_for_recording(0.5)
+        self.cam.stop_recording()
 
 
 if __name__ == "__main__":

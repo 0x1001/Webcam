@@ -26,10 +26,6 @@ class Storage(object):
     def save_motion(self, recording, photo):
         self._add_motion_to_database(recording, photo)
 
-    def save_stream(self, photo):
-        with open(self._photo_output_path("stream"), "wb") as out:
-            out.write(photo)
-
     def _delete(self, name):
         from webcam import settings
         import os
@@ -52,7 +48,6 @@ class Storage(object):
         from webcam import settings
 
         photo.save(settings.STATICFILES_DIRS[1])
-        photo.save_thumbnail(settings.STATICFILES_DIRS[1])
 
     def _add_recording_to_database(self, recording, photo):
         from home.models import add_recording
@@ -62,18 +57,12 @@ class Storage(object):
     def _add_photo_to_database(self, photo):
         from home.models import add_photo
 
-        add_photo(photo.name, photo.thumbnail_name, photo.time)
+        add_photo(photo.name, photo.time)
 
     def _add_motion_to_database(self, recording, photo):
         from home.models import add_movement
 
         add_movement(photo.time, recording.name, photo.name)
-
-    def _photo_output_path(self, name):
-        import os
-        from webcam import settings
-
-        return os.path.join(settings.STATICFILES_DIRS[1], name + ".jpeg")
 
     def _init_django(self):
         from os import environ

@@ -22,11 +22,11 @@ if __name__ == "__main__":
     cleaner = threading.Thread(target=webcam.clean)
     cleaner.start()
 
-    #stream = threading.Thread(target=webcam.stream)
-    #stream.start()
+    stream = threading.Thread(target=webcam.stream)
+    stream.start()
 
     _configure_exit(webcam)
 
     record_motion.join()
     cleaner.join()
-    #stream.join()
+    stream.join()

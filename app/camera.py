@@ -9,6 +9,7 @@ class CameraException(Exception):
 
 class Camera(object):
     def __init__(self):
+        import threading
         import picamera
         import motion
 
@@ -28,6 +29,13 @@ class Camera(object):
         self._recording_flag = False
 
         self._photo_channel = 2
+        self._photo_latest = None
+        self._photo_camera = threading.Thread(target=self._photo_camera_thread)
+
+        self._exit = threading.Event()
+
+    def start(self):
+        self._photo_camera.start()
 
     def start_motion_detection(self):
         self._camera.start_recording(self._motion_recording,
@@ -47,8 +55,6 @@ class Camera(object):
         return not exit_event.is_set()
 
     def record_motion(self, exit_event):
-        import recording
-
         record_time = _MOTION_RECORDING_TIME - _MOTION_RECORDING_TIME / 4
         delta = 1
 
@@ -60,13 +66,7 @@ class Camera(object):
         self._camera.stop_recording(splitter_port=self._motion_channel)
         self._led_off(motion_recording=True)
 
-        stream, recording_time = self._process_motion_recording(self._motion_recording)
-        rec = recording.Recording(stream, recording_time)
-
-        if recording_time > _MOTION_RECORDING_TIME:
-            rec.cut(recording_time - _MOTION_RECORDING_TIME, recording_time)
-
-        return rec
+        return self._process_motion_recording(self._motion_recording)
 
     def start_recording(self):
         import io
@@ -88,20 +88,18 @@ class Camera(object):
         return self._recording.read()
 
     def take_photo(self):
-        import io
         import photo
+        return photo.Photo(self._photo_latest)
 
-        stream = io.BytesIO()
-        self._camera.capture(stream,
-                             format='jpeg',
-                             use_video_port=True,
-                             splitter_port=self._photo_channel)
-
-        stream.seek(0)
-        return photo.Photo(stream.read())
+    def close(self):
+        self._exit.set()
+        self._camera.close()
+        if self._photo_camera.is_alive():
+            self._photo_camera.join()
 
     def _process_motion_recording(self, stream):
         import picamera
+        import recording
 
         f_count = 0
         first_sps_header = None
@@ -112,7 +110,26 @@ class Camera(object):
 
         recording_time = f_count / _FRAMERATE
         stream.seek(first_sps_header)
-        return stream.read(), recording_time
+
+        rec = recording.Recording(stream.read(), recording_time)
+
+        if recording_time > _MOTION_RECORDING_TIME:
+            rec.cut(recording_time - _MOTION_RECORDING_TIME, recording_time)
+
+        return rec
+
+    def _photo_camera_thread(self):
+        import io
+
+        while not self._exit.wait(0.2):
+            stream = io.BytesIO()
+            self._camera.capture(stream,
+                                 format='jpeg',
+                                 use_video_port=True,
+                                 splitter_port=self._photo_channel)
+
+            stream.seek(0)
+            self._photo_latest = stream.read()
 
     def _led_on(self, recording=False, motion_recording=False):
         if recording or motion_recording:
@@ -133,6 +150,3 @@ class Camera(object):
 
         if not self._recording_flag and not self._motion_recording_flag:
             self._camera.led = False
-
-    def __del__(self):
-        self._camera.close()

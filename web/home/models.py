@@ -1,23 +1,23 @@
 from django.db import models
+import datetime
 
 
 class Photo(models.Model):
-    name = models.CharField(max_length=20)
-    thumbnail = models.CharField(max_length=20)
-    time = models.DateTimeField()
+    name = models.CharField(max_length=20, unique=True)
+    time = models.DateTimeField(default=datetime.datetime(year=1999, month=1, day=1))
 
 
 class Recording(models.Model):
-    name = models.CharField(max_length=20)
-    time = models.DateTimeField()
-    lenght = models.IntegerField()
-    photo = models.OneToOneField(Photo)
+    name = models.CharField(max_length=20, unique=True)
+    time = models.DateTimeField(default=datetime.datetime(year=1999, month=1, day=1))
+    lenght = models.IntegerField(default=0)
+    photo = models.ForeignKey(Photo)
 
 
 class Movement(models.Model):
-    time = models.DateTimeField()
-    photo = models.OneToOneField(Photo)
-    recording = models.OneToOneField(Recording)
+    time = models.DateTimeField(unique=True)
+    photo = models.ForeignKey(Photo)
+    recording = models.ForeignKey(Recording)
 
 
 class Configuration(models.Model):
@@ -26,8 +26,8 @@ class Configuration(models.Model):
     hflip = models.BooleanField(default=False)
 
 
-def add_photo(name, thumbnail_name, time):
-    Photo(name=name, thumbnail=thumbnail_name, time=time).save()
+def add_photo(name, time):
+    Photo(name=name, time=time).save()
 
 
 def add_recording(name, time, lenght, photo):
@@ -42,7 +42,7 @@ def add_movement(time, recording, photo):
 
 
 def get_recordings():
-    return Recording.objects.order_by('-time').all()
+    return Recording.objects.exclude(name="norecording").order_by('-time').all()
 
 
 def get_movements():
@@ -50,5 +50,25 @@ def get_movements():
 
 
 def remove_recording(name):
-    Movement.objects.filter(recording__name=name).update(recording="norecording")
+    r = _get_no_recording()
+    Movement.objects.filter(recording__name=name).update(recording=r)
     Recording.objects.filter(name=name).delete()
+
+
+def _get_no_recording():
+    p = _get_no_photo()
+    r = Recording.objects.filter(name="norecording").first()
+    if r is None:
+        r = Recording(name="norecording", photo=p)
+        r.save()
+
+    return r
+
+
+def _get_no_photo():
+    p = Photo.objects.filter(name="nophoto").first()
+    if p is None:
+        p = Photo(name="nophoto")
+        p.save()
+
+    return p

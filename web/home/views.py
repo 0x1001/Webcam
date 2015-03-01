@@ -2,6 +2,8 @@ from django.shortcuts import render
 from home.models import Configuration
 from home.models import get_recordings
 from home.models import get_movements
+from django.core.servers.basehttp import FileWrapper
+from django.http import StreamingHttpResponse
 
 
 def home(request):
@@ -22,3 +24,14 @@ def get_config(request):
 
 def stream(request):
     return render(request, 'stream.html')
+
+
+def stream_data(request):
+    from gevent import socket
+    from time import sleep
+
+    sleep(0.3)
+    s = socket.create_connection(("127.0.0.1", 1234))
+    sf = s.makefile()
+
+    return StreamingHttpResponse(FileWrapper(sf), content_type='image/jpeg')

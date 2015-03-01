@@ -14,9 +14,21 @@ class RPiWebcam(webcambase.WebcamBase):
         self._camera = camera.Camera()
         self._storage = storage.Storage()
         self._exit_event = threading.Event()
-        self._photo_lock = threading.RLock()
+
+        self._camera.start()
+        self._stream_server = None
 
         super(RPiWebcam, self).__init__()
+
+    def _start_stream_server(self):
+        from gevent.server import StreamServer
+
+        def handle(socket, address):
+            p = self._take_photo()
+            socket.sendall(p.get_base64_contents())
+
+        self._stream_server = StreamServer(('127.0.0.1', 1234), handle)
+        self._stream_server.serve_forever()
 
     def _start_motion_detection(self):
         self._camera.start_motion_detection()
@@ -49,14 +61,10 @@ class RPiWebcam(webcambase.WebcamBase):
                 break
 
     def _take_photo(self):
-        with self._photo_lock:
-            return self._camera.take_photo()
+        return self._camera.take_photo()
 
     def _save_photo(self, photo):
         self._storage.save_photo(photo)
-
-    def _save_stream(self, photo):
-        self._storage.save_stream(photo)
 
     def _save_recording(self, recording, photo):
         self._storage.save_photo(photo)
@@ -77,3 +85,8 @@ class RPiWebcam(webcambase.WebcamBase):
 
     def _exit_request(self):
         self._exit_event.set()
+
+        if self._stream_server is not None:
+            self._stream_server.stop()
+
+        self._camera.close()

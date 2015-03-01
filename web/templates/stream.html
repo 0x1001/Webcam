@@ -5,6 +5,18 @@
 
 {% block body %}
 <h1 class="page-header">Stream Live</h1>
-<img src="{% static 'stream.jpeg' %}">
+<img id="stream" onload="stream_data()" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==">
 
+<script>
+function stream_data(){
+    $.when(ajax1()).done(function(input_data){
+        $("#stream").attr("src", "data:image/png;base64," + input_data);
+    });
+}
+
+function ajax1() {
+    return $.ajax("{% url 'home.views.stream_data' %}");
+}
+
+</script>
 {% endblock %}

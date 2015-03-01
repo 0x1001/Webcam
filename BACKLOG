@@ -7,3 +7,4 @@
 - Add ability to record
 - Add ability to take photo
 - Add ability to take time lapse
+- Serve degenerate case of empty database on web properly

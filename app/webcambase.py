@@ -8,10 +8,7 @@ class WebcamBase(object):
                 self._save_motion(recording, photo)
 
     def stream(self):
-        while not self._exit():
-            photo = self._take_photo()
-            self._save_stream(photo)
-            self._wait(10)
+        self._start_stream_server()
 
     def clean(self):
         while not self._exit():
