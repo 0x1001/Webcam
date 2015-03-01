@@ -9,14 +9,13 @@
 
 <script>
 function stream_data(){
-    $.when(ajax1()).done(function(input_data){
+    $.when(stream_req()).done(function(input_data){
         $("#stream").attr("src", "data:image/png;base64," + input_data);
     });
 }
 
-function ajax1() {
+function stream_req() {
     return $.ajax("{% url 'home.views.stream_data' %}");
 }
-
 </script>
 {% endblock %}

@@ -1,0 +1,4 @@
+html {
+  overflow-y: scroll; /* Fix for flickering menu bar */
+}
+

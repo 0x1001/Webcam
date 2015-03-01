@@ -30,8 +30,8 @@ def stream_data(request):
     from gevent import socket
     from time import sleep
 
-    sleep(0.3)
+    sleep(0.5)
     s = socket.create_connection(("127.0.0.1", 1234))
     sf = s.makefile()
 
-    return StreamingHttpResponse(FileWrapper(sf), content_type='image/jpeg')
+    return StreamingHttpResponse(FileWrapper(sf), content_type='text/plain')
