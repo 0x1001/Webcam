@@ -6,8 +6,17 @@
 {% block body %}
 <h1 class="page-header">Home</h1>
 <div class="jumbotron">
-  <h1><img src="{% static 'img/logo_128.png' %}"> Raspberry Pi Web camera</h1>
-  <p align="center">Live stream, motion detection, recordings.</p>
-  <p align="center"><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+  <h1>Raspberry Pi Web Camera</h1>
+  <p align="center"></p>
+  <div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6"><p align="center">Live stream, motion detection, recordings.<p></div>
+    <div class="col-md-3"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4"><p align="center"><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p></div>
+    <div class="col-md-4"><p align="right"><img src="{% static 'img/logo_256.png' %}"></p></div>
+  </div>
 </div>
 {% endblock %}

@@ -18,18 +18,22 @@
   </video>
 </div>
 
-<h2 class="sub-header">Latest</h2>
+<hr>
 <div class="row">
 {% for recording in recordings %}
   <div class="col-sm-6 col-md-4">
-    <div class="thumbnail">
-      <a href="{% url 'home.views.recordings' recording.name %}"><img src="{% static recording.photo.name %}"></a>
-      <div class="caption">
-        <h3>{{ recording.time|date:"l d M Y H:i" }}</h3>
-        <p>Length: {{ recording.lenght }} s</p>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ recording.time|date:"l jS M Y H:i" }}<span class="glyphicon glyphicon-facetime-video pull-right" aria-hidden="true"></span></h3>
       </div>
-    </div>
+      <div class="panel-body">
+        <div class="thumbnail">
+          <a href="{% url 'home.views.recordings' recording.name %}"><img src="{% static recording.photo.name %}"></a>
+        </div>
+        <p align="right">{{ recording.lenght }} seconds</p>
+      </div>
+    </div> <!-- panel -->
   </div>
 {% endfor %}
-</div>
+</div> <!-- row -->
 {% endblock %}
