@@ -45,10 +45,6 @@ def get_recordings():
     return Recording.objects.exclude(name="norecording").order_by('-time').all()
 
 
-def get_movements():
-    return Movement.objects.order_by('-time').all()
-
-
 def remove_recording(name):
     r = _get_no_recording()
     Movement.objects.filter(recording__name=name).update(recording=r)

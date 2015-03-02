@@ -1,0 +1,20 @@
+<nav>
+  <ul class="pagination pagination-lg">
+    <li>
+      {% if movements.has_previous %}
+        <a href="{% url 'home.views.movements' movements.previous_page_number %}">&laquo;</a>
+      {% endif %}
+    </li>
+    {% for page in movements.paginator.page_range %}
+    <li class="{% if movements.number == page %}active{% endif %}"><a href="{% url 'home.views.movements' page %}">{{ page }}</a></li>
+    {% endfor %}
+
+    <li>
+      {% if movements.has_next %}
+        <a href="{% url 'home.views.movements' movements.next_page_number %}">&raquo;</a>
+      {% endif %}
+    </li>
+  </ul>
+</nav>
+
+

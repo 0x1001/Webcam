@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from home.models import Configuration
+from home.models import Movement
 from home.models import get_recordings
-from home.models import get_movements
 from django.core.servers.basehttp import FileWrapper
 from django.http import StreamingHttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def home(request):
@@ -14,8 +15,20 @@ def recordings(request, recording=None):
     return render(request, 'recordings.html', {"recordings": get_recordings(), "recording": recording})
 
 
-def movements(request):
-    return render(request, 'movements.html', {"movements": get_movements()})
+def movements(request, page=1):
+    page = int(page)
+
+    mov_all = Movement.objects.order_by('-time').all()
+    paginator = Paginator(mov_all, 100)
+
+    try:
+        movements = paginator.page(page)
+    except PageNotAnInteger:
+        movements = paginator.page(1)
+    except EmptyPage:
+        movements = paginator.page(paginator.num_pages)
+
+    return render(request, 'movements.html', {"movements": movements})
 
 
 def get_config(request):
