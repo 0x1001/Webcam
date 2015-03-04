@@ -3,3 +3,4 @@
 *.sqlite3
 *.h264
 *.jpeg
+*.coverage

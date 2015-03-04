@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block Photos %}active{% endblock %}
+
+{% block body %}
+<h1 class="page-header">Photos</h1>
+<div class="embed-responsive embed-responsive-16by9">
+  {% if not photo %}
+    {% with photos|first as photo %}
+    <img src="{% static photo.name %}">
+    {% endwith %}
+  {% else %}
+    <img src="{% static photo %}">
+  {% endif %}
+</div>
+
+<hr>
+<div class="row">
+  <div class="col-md-12 text-center">
+  {% include 'pagination_photos.html' %}
+  </div>
+<div>
+<div class="row">
+{% for ph in photos %}
+  <div class="col-sm-6 col-md-4">
+    {% if ph.name == photo %}<div class="panel panel-success">{% else %}<div class="panel panel-primary">{% endif %}
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ ph.time|date:"l jS M Y H:i" }}<span class="glyphicon glyphicon-picture pull-right" aria-hidden="true"></span></h3>
+      </div>
+      <div class="panel-body">
+        <div class="thumbnail">
+          <a href="{% url 'home.views.photos' page=photos.number photo=ph.name %}"><img src="{% static ph.name %}"></a>
+        </div>
+      </div>
+    </div> <!-- panel -->
+  </div>
+{% endfor %}
+</div> <!-- row -->
+<div class="row">
+  <div class="col-md-12 text-center">
+  {% include 'pagination_photos.html' %}
+  </div>
+<div>
+{% endblock %}

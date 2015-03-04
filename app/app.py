@@ -23,10 +23,10 @@ if __name__ == "__main__":
     cleaner.start()
 
     stream = threading.Thread(target=webcam.stream)
+    stream.setDaemon(True)
     stream.start()
 
     _configure_exit(webcam)
 
     record_motion.join()
     cleaner.join()
-    stream.join()

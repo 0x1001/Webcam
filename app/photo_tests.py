@@ -18,5 +18,8 @@ class Test_Photo(unittest.TestCase):
         self.assertTrue(os.path.isfile(img_path))
         os.unlink(img_path)
 
+        p.get_base64_contents()
+        p.get_contents()
+
 if __name__ == "__main__":
     unittest.main()

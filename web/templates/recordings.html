@@ -20,17 +20,17 @@
 
 <hr>
 <div class="row">
-{% for recording in recordings %}
+{% for rec in recordings %}
   <div class="col-sm-6 col-md-4">
-    <div class="panel panel-primary">
+    {% if rec.name == recording %}<div class="panel panel-success">{% else %}<div class="panel panel-primary">{% endif %}
       <div class="panel-heading">
-        <h3 class="panel-title">{{ recording.time|date:"l jS M Y H:i" }}<span class="glyphicon glyphicon-facetime-video pull-right" aria-hidden="true"></span></h3>
+        <h3 class="panel-title">{{ rec.time|date:"l jS M Y H:i" }}<span class="glyphicon glyphicon-facetime-video pull-right" aria-hidden="true"></span></h3>
       </div>
       <div class="panel-body">
         <div class="thumbnail">
-          <a href="{% url 'home.views.recordings' recording.name %}"><img src="{% static recording.photo.name %}"></a>
+          <a href="{% url 'home.views.recordings' rec.name %}"><img src="{% static rec.photo.name %}"></a>
         </div>
-        <p align="right">{{ recording.lenght }} seconds</p>
+        <p align="right">{{ rec.lenght }} seconds</p>
       </div>
     </div> <!-- panel -->
   </div>
