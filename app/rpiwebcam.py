@@ -3,6 +3,7 @@ import webcambase
 _WAIT_TIME = 0.2
 _MAX_RECORD_TIME = 30
 _MAX_RECORDINGS_COUNT = 30
+_MAX_PHOTOS_COUNT = 200
 
 
 class RPiWebcam(webcambase.WebcamBase):
@@ -75,10 +76,15 @@ class RPiWebcam(webcambase.WebcamBase):
         self._storage.save_recording(recording, photo)
         self._storage.save_motion(recording, photo)
 
-    def _delete_oldest(self):
+    def _delete_oldest_recordings(self):
         recordings = self._storage.get_all_recordings()
         for r in recordings[_MAX_RECORDINGS_COUNT:]:
             self._storage.delete_recording(r.name)
+
+    def _delete_oldest_photos(self):
+        photos = self._storage.get_all_photos()
+        for p in photos[_MAX_PHOTOS_COUNT:]:
+            self._storage.delete_photo(p.name)
 
     def _exit(self):
         return self._exit_event.is_set()

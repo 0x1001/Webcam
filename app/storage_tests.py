@@ -48,11 +48,14 @@ class Test_Storage(unittest.TestCase):
         s.save_photo(p)
         s.save_motion(r, p)
 
-    def test_save_stream(self):
-        import storage
-
+    def test_get_all_photos(self):
         s = storage.Storage()
-        s.save_stream("dummy")
+        s.get_all_photos()
+
+    def test_get_all_recordings(self):
+        s = storage.Storage()
+        s.get_all_recordings()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -55,6 +55,13 @@ def remove_recording(name):
     Recording.objects.filter(name=name).delete()
 
 
+def remove_photo(name):
+    p = _get_no_photo()
+
+    Movement.objects.filter(photo__name=name).update(photo=p)
+    Photo.objects.filter(name=name).delete()
+
+
 def _get_no_recording():
     p = _get_no_photo()
     r = Recording.objects.filter(name="norecording").first()
