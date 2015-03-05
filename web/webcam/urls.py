@@ -3,6 +3,8 @@ from django.contrib import admin
 
 urlpatterns = patterns('',
     url(r'^$', 'home.views.home'),
+    url(r'^help$', 'home.views.help'),
+    url(r'^about$', 'home.views.about'),
     url(r'^recordings$', 'home.views.recordings'),
     url(r'^recordings/(?P<recording>[\w\.]+)$', 'home.views.recordings'),
     url(r'^photos$', 'home.views.photos'),

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from home.models import Configuration
 from home.models import Movement
 from home.models import get_recordings
-from home.models import Photo
+from home.models import get_photos
 from django.core.servers.basehttp import FileWrapper
 from django.http import StreamingHttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -10,6 +10,14 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def home(request):
     return render(request, 'home.html')
+
+
+def help(request):
+    return render(request, 'help.html')
+
+
+def about(request):
+    return render(request, 'about.html')
 
 
 def recordings(request, recording=None):
@@ -24,7 +32,7 @@ def recordings(request, recording=None):
 def photos(request, photo=None, page=1):
     page = int(page)
 
-    photos_all = Photo.objects.order_by('-time').all()
+    photos_all = get_photos()
     paginator = Paginator(photos_all, 100)
 
     try:

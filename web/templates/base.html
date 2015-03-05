@@ -45,10 +45,10 @@
             <li class="{% block Recordings %}{% endblock %}"><a href="{% url 'home.views.recordings' %}">Recordings</a></li>
             <li class="{% block Movements %}{% endblock %}"><a href="{% url 'home.views.movements' %}">Movements</a></li>
             <li class="{% block Configuration %}{% endblock %}"><a href="{% url 'home.views.get_config' %}">Configuration</a></li>
-            <li class="{% block Help %}{% endblock %}"><a href="#">Help</a></li>
+            <li class="{% block Help %}{% endblock %}"><a href="{% url 'home.views.help' %}">Help</a></li>
            </ul>
            <ul class="nav navbar-nav navbar-right">
-            <li class="{% block About %}{% endblock %}"><a href="#">About</a></li>
+            <li class="{% block About %}{% endblock %}"><a href="{% url 'home.views.about' %}">About</a></li>
            </ul>
         </div>
       </div>
