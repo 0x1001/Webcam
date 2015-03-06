@@ -1,9 +1,12 @@
 import picamera.array
 
-_MAGNITUDE = 10      # If there're more than 10 vectors with a magnitude greater
-_VECTOR_COUNT = 60  # than 60, then say we've detected motion
+_MAGNITUDE = 0  # Motion vector magnitude. Range: 0 - 255
+_MIN_SAMPLES = 0.1  # min samples with motion. Range: 0% - 100%
+_MAX_SAMPLES = 10  # max samples with motion. Range: 0% - 100%
+_MIN_MOTION_FRAMES = 3  # How many frames have to see motion before trigger motion detected
 
-_ANGLE = 10    # Motion angle differenece + or - from 90.
+_MIN_SAMPLES *= 0.01
+_MAX_SAMPLES *= 0.01
 
 
 class Motion(picamera.array.PiMotionAnalysis):
@@ -12,6 +15,7 @@ class Motion(picamera.array.PiMotionAnalysis):
 
         super(Motion, self).__init__(*args, **kwargs)
 
+        self._frames_with_motion = 0
         self._event = threading.Event()
 
     def analyse(self, a):
@@ -22,17 +26,21 @@ class Motion(picamera.array.PiMotionAnalysis):
             np.square(a['y'].astype(np.float))
             ).clip(0, 255).astype(np.uint8)
 
-        phi = ((np.arctan2(
-              a['y'].astype(np.float),
-              a['x'].astype(np.float)) +
-              np.pi) * 180 / (2 * np.pi)
-              ).clip(0, 255).astype(np.uint8)
+        samples = len(r) * len(r[0])  # Size of frame. Ex: 81 x 40 for recording resolution 1280 x 720.
 
-        if ((r > _VECTOR_COUNT).sum() > _MAGNITUDE and
-            ((phi > _VECTOR_COUNT).sum() > 90 + _ANGLE or
-            (phi > _VECTOR_COUNT).sum() > 90 - _ANGLE)):
+        samples_min = samples * _MIN_SAMPLES  # min number of samples with motion magnitue greater than _MAGNITUDE
+        samples_max = samples * _MAX_SAMPLES  # max number of samples with motion magnitue greater than _MAGNITUDE
 
-            self._event.set()
+        motion_samples = (r > _MAGNITUDE).sum()  # Finds number of samples with motion magnitue greater than _MAGNITUDE
+
+        if motion_samples > samples_min and motion_samples < samples_max:
+            self._motion_frames += 1
+
+            if self._motion_frames == _MIN_MOTION_FRAMES:  # Checks if motion was also detected on previous frames
+                self._motion_frames = 0
+                self._event.set()
+        else:
+            self._motion_frames = 0
 
     def event(self):
         return self._event
