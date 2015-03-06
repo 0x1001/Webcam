@@ -38,17 +38,19 @@ class Camera(object):
         self._photo_camera.start()
 
     def start_motion_detection(self):
+        self._motion_recording.seek(0)
+        self._motion_recording.truncate()
+
+        self._motion_detector.reset()
+
         self._camera.start_recording(self._motion_recording,
                                      format='h264',
                                      splitter_port=self._motion_channel,
                                      motion_output=self._motion_detector)
 
-        self._camera.wait_recording(1, splitter_port=self._motion_channel)
-
     def wait_for_motion(self, exit_event):
         import orevent
 
-        self._motion_detector.reset()
         ore = orevent.OrEvent(exit_event, self._motion_detector.event())
         ore.wait()
         ore.close()
