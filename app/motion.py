@@ -1,7 +1,7 @@
 import picamera.array
 
 _MAGNITUDE = 0  # Motion vector magnitude. Range: 0 - 255
-_MIN_SAMPLES = 0.1  # min samples with motion. Range: 0% - 100%
+_MIN_SAMPLES = 0.5  # min samples with motion. Range: 0% - 100%
 _MAX_SAMPLES = 10  # max samples with motion. Range: 0% - 100%
 _MIN_MOTION_FRAMES = 3  # How many frames have to see motion before trigger motion detected
 

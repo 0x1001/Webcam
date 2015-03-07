@@ -72,9 +72,14 @@ class RPiWebcam(webcambase.WebcamBase):
         self._storage.save_recording(recording, photo)
 
     def _save_motion(self, recording, photo):
-        self._storage.save_photo(photo)
-        self._storage.save_recording(recording, photo)
-        self._storage.save_motion(recording, photo)
+        import threading
+
+        def _do():
+            self._storage.save_photo(photo)
+            self._storage.save_recording(recording, photo)
+            self._storage.save_motion(recording, photo)
+
+        threading.Thread(target=_do).start()
 
     def _delete_oldest_recordings(self):
         recordings = self._storage.get_all_recordings()

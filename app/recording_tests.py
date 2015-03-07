@@ -2,12 +2,6 @@ import unittest
 
 
 class Test_Recording(unittest.TestCase):
-    def test_basic(self):
-        import recording
-
-        with self.assertRaises(recording.RecordingException):
-            recording.Recording(None, 0)
-
     def test_recording(self):
         import recording
         import tempfile
