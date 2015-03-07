@@ -23,7 +23,7 @@ def about(request):
 def recordings(request, recording=None):
     recordings = get_recordings()
 
-    if recording is None:
+    if recording is None and len(recordings) != 0:
         recording = recordings[0].name
 
     return render(request, 'recordings.html', {"recordings": recordings, "recording": recording})
@@ -42,7 +42,7 @@ def photos(request, photo=None, page=1):
     except EmptyPage:
         photos = paginator.page(paginator.num_pages)
 
-    if photo is None:
+    if photo is None and len(photos.object_list) != 0:
         photo = photos.object_list[0].name
 
     return render(request, 'photos.html', {"photos": photos, "photo": photo})

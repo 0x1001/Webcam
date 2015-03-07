@@ -65,6 +65,8 @@ DATABASES = {
     }
 }
 
+DATABASE_OPTIONS = {'timeout': 120}
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 

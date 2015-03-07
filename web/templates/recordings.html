@@ -5,19 +5,18 @@
 
 {% block body %}
 <h1 class="page-header">Recordings</h1>
+{% if recording %}
 <div class="embed-responsive embed-responsive-16by9">
   <video class="embed-responsive-item" controls>
-    {% if not recording %}
-      {% with recordings|first as recording %}
-        <source src="{% static recording.name %}" type="video/mp4">
-      {% endwith %}
-    {% else %}
-      <source src="{% static recording %}" type="video/mp4">
-    {% endif %}
+    <source src="{% static recording %}" type="video/mp4">
     <span class="label label-danger">Your browser does not support the video.</span>
   </video>
 </div>
+{% else %}
+<p class="lead">No recordings in database!</p>
+{% endif %}
 
+{% if recordings|length != 0 %}
 <hr>
 <div class="row">
 {% for rec in recordings %}
@@ -36,4 +35,5 @@
   </div>
 {% endfor %}
 </div> <!-- row -->
+{% endif %}
 {% endblock %}

@@ -6,6 +6,8 @@
 
 {% block body %}
 <h1 class="page-header">Movements</h1>
+
+{% if movements|length != 0 %}
 <div class="row">
   <div class="col-md-12 text-center">
   {% include 'pagination_movements.html' %}
@@ -45,4 +47,7 @@
   {% include 'pagination_movements.html' %}
   </div>
 <div>
+{% else %}
+<p class="lead">No movements in database!</p>
+{% endif %}
 {% endblock %}

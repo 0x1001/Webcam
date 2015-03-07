@@ -5,16 +5,16 @@
 
 {% block body %}
 <h1 class="page-header">Photos</h1>
-<div class="embed-responsive embed-responsive-16by9">
-  {% if not photo %}
-    {% with photos|first as photo %}
-    <img src="{% static photo.name %}">
-    {% endwith %}
-  {% else %}
-    <img src="{% static photo %}">
-  {% endif %}
-</div>
 
+{% if photo %}
+<div class="embed-responsive embed-responsive-16by9">
+  <img class="embed-responsive-item" src="{% static photo %}">
+</div>
+{% else %}
+<p class="lead">No photos in database!</p>
+{% endif %}
+
+{% if photos|length != 0 %}
 <hr>
 <div class="row">
   <div class="col-md-12 text-center">
@@ -42,4 +42,5 @@
   {% include 'pagination_photos.html' %}
   </div>
 <div>
+{% endif %}
 {% endblock %}

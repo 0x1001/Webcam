@@ -19,7 +19,7 @@ class Storage(object):
     def delete_recording(self, name):
         from webcam import settings
 
-        self._delete(settings.STATICFILES_DIRS[1], name)
+        self._delete(settings.STATICFILES_DIRS[0], name)
         self._remove_recording_from_database(name)
 
     def delete_photo(self, name):
