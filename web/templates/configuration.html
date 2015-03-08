@@ -15,5 +15,8 @@
 <input class="btn btn-default" type="submit" value="Submit">
 </form>
 
-</form>
+<h1 class="page-header">Control Center</h1>
+<button onclick="window.location.href='{% url 'home.views.restart_app' %}'" type="button" class="btn btn-primary" aria-expanded="false">Restart Web Camera</button>
+<button onclick="window.location.href='{% url 'home.views.restart_pi' %}'" type="button" class="btn btn-primary" aria-expanded="false">Restart Raspberry Pi</button>
+<button onclick="window.location.href='{% url 'home.views.shutdown_pi' %}'" type="button" class="btn btn-danger" aria-expanded="false">Shutdown Raspberry Pi</button>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from home.models import Configuration
 from home.models import Movement
 from home.models import get_recordings
@@ -60,10 +61,6 @@ def movements(request, page=1):
     return render(request, 'movements.html', {"movements": movements})
 
 
-def get_config(request):
-    return render(request, 'configuration.html', {"config": Configuration.objects.first()})
-
-
 def stream(request):
     return render(request, 'stream.html')
 
@@ -77,3 +74,43 @@ def stream_data(request):
     sf = s.makefile()
 
     return StreamingHttpResponse(FileWrapper(sf), content_type='text/plain')
+
+
+def get_config(request):
+    return render(request, 'configuration.html', {"config": Configuration.objects.first()})
+
+
+def restart_app(request):
+    import subprocess
+    import os
+    import time
+
+    current_path = os.path.abspath(__file__)
+    base_path = os.path.dirname(os.path.dirname(os.path.dirname(current_path)))
+
+    stop_cmd = [os.path.join(base_path, "webcam.sh"), "stop", "app"]
+    start_cmd = [os.path.join(base_path, "webcam.sh"), "start", "app"]
+
+    subprocess.Popen(stop_cmd, cwd=base_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True).wait()
+    time.sleep(2)
+    subprocess.Popen(start_cmd, cwd=base_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+
+    return redirect('home.views.get_config')
+
+
+def restart_pi(request):
+    import subprocess
+
+    cmd = ["reboot"]
+    subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+
+    return redirect('home.views.get_config')
+
+
+def shutdown_pi(request):
+    import subprocess
+
+    cmd = ["shutdown", "-h", "now"]
+    subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+
+    return redirect('home.views.get_config')
