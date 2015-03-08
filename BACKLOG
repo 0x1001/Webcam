@@ -1,5 +1,8 @@
 - Configuration via page
-- Write short help page
+- Add start/stop/restart mechanism
+- Create start script
+
+Next:
 - Add ability to record
 - Add ability to take photo
 - Add ability to take time lapse
