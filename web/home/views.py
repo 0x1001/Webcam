@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from home.models import Configuration
 from home.models import Movement
 from home.models import get_recordings
 from home.models import get_photos
@@ -17,10 +16,20 @@ def about(request):
     return render(request, 'about.html')
 
 
-def recordings(request, recording=None):
-    recordings = get_recordings()
+def recordings(request, recording=None, page=1):
+    page = int(page)
 
-    if recording is None and len(recordings) != 0:
+    recordings_all = get_recordings()
+    paginator = Paginator(recordings_all, 20)
+
+    try:
+        recordings = paginator.page(page)
+    except PageNotAnInteger:
+        recordings = paginator.page(1)
+    except EmptyPage:
+        recordings = paginator.page(paginator.num_pages)
+
+    if recording is None and len(recordings.object_list) != 0:
         recording = recordings[0].name
 
     return render(request, 'recordings.html', {"recordings": recordings, "recording": recording})
@@ -30,7 +39,7 @@ def photos(request, photo=None, page=1):
     page = int(page)
 
     photos_all = get_photos()
-    paginator = Paginator(photos_all, 100)
+    paginator = Paginator(photos_all, 20)
 
     try:
         photos = paginator.page(page)
@@ -49,7 +58,7 @@ def movements(request, page=1):
     page = int(page)
 
     mov_all = Movement.objects.order_by('-time').all()
-    paginator = Paginator(mov_all, 100)
+    paginator = Paginator(mov_all, 50)
 
     try:
         movements = paginator.page(page)
@@ -76,8 +85,8 @@ def stream_data(request):
     return StreamingHttpResponse(FileWrapper(sf), content_type='text/plain')
 
 
-def get_config(request):
-    return render(request, 'configuration.html', {"config": Configuration.objects.first()})
+def configuration(request):
+    return render(request, 'configuration.html')
 
 
 def restart_app(request):

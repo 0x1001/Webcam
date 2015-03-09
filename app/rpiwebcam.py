@@ -2,8 +2,11 @@ import webcambase
 
 _WAIT_TIME = 0.2
 _MAX_RECORD_TIME = 30
-_MAX_RECORDINGS_COUNT = 30
+_STREAM_SIZE = 640, 360
+
+_MAX_RECORDINGS_COUNT = 100
 _MAX_PHOTOS_COUNT = 200
+_MAX_MOVEMENTS_COUNT = 1000
 
 
 class RPiWebcam(webcambase.WebcamBase):
@@ -26,7 +29,7 @@ class RPiWebcam(webcambase.WebcamBase):
 
         def handle(socket, address):
             p = self._take_photo()
-            socket.sendall(p.get_base64_contents())
+            socket.sendall(p.get_base64_contents(_STREAM_SIZE))
 
         self._stream_server = StreamServer(('127.0.0.1', 1234), handle)
         self._stream_server.serve_forever()
@@ -90,6 +93,11 @@ class RPiWebcam(webcambase.WebcamBase):
         photos = self._storage.get_all_photos()
         for p in photos[_MAX_PHOTOS_COUNT:]:
             self._storage.delete_photo(p.name)
+
+    def _delete_oldest_movements(self):
+        movements = self._storage.get_all_movements()
+        for m in movements[_MAX_MOVEMENTS_COUNT:]:
+            self._storage.delete_movement(m.id)
 
     def _exit(self):
         return self._exit_event.is_set()

@@ -14,6 +14,7 @@ class WebcamBase(object):
         while not self._exit():
             self._delete_oldest_recordings()
             self._delete_oldest_photos()
+            self._delete_oldest_movements()
             self._wait(600)
 
     def config(self):

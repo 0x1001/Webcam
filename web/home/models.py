@@ -5,6 +5,7 @@ import datetime
 class Photo(models.Model):
     name = models.CharField(max_length=20, unique=True)
     time = models.DateTimeField(default=datetime.datetime(year=1999, month=1, day=1))
+    thumbnail = models.CharField(max_length=20, unique=True, default="nophoto")
 
 
 class Recording(models.Model):
@@ -20,14 +21,8 @@ class Movement(models.Model):
     recording = models.ForeignKey(Recording)
 
 
-class Configuration(models.Model):
-    width = models.IntegerField(default=800)
-    height = models.IntegerField(default=600)
-    hflip = models.BooleanField(default=False)
-
-
-def add_photo(name, time):
-    Photo(name=name, time=time).save()
+def add_photo(name, thumbnail, time):
+    Photo(name=name, thumbnail=thumbnail, time=time).save()
 
 
 def add_recording(name, time, lenght, photo):

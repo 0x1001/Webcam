@@ -15,8 +15,11 @@ class Test_Photo(unittest.TestCase):
         p = photo.Photo(s)
         p.save(tempfile.gettempdir())
         img_path = os.path.join(tempfile.gettempdir(), p.name)
+        thm_path = os.path.join(tempfile.gettempdir(), p.thumbnail)
         self.assertTrue(os.path.isfile(img_path))
+        self.assertTrue(os.path.isfile(thm_path))
         os.unlink(img_path)
+        os.unlink(thm_path)
 
         p.get_base64_contents()
         p.get_contents()

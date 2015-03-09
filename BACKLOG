@@ -1,6 +1,12 @@
-- Configuration via page
+- Add thumbnails
+- Reduce number of photos and recordings per page
+- Add pagination to recordings
+- Add cleaning to movements
+- Check if 30% motion max samples is enough to detect motion on entire screen
+- Add small stream and big stream
 
 Next:
 - Add ability to record
 - Add ability to take photo
 - Add ability to take time lapse
+- Configuration via page
