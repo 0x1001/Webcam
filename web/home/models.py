@@ -44,6 +44,10 @@ def get_photos():
     return Photo.objects.exclude(name="nophoto").order_by('-time').all()
 
 
+def get_movements():
+    return Movement.objects.order_by('-time').all()
+
+
 def remove_recording(name):
     r = _get_no_recording()
     Movement.objects.filter(recording__name=name).update(recording=r)
@@ -55,6 +59,10 @@ def remove_photo(name):
 
     Movement.objects.filter(photo__name=name).update(photo=p)
     Photo.objects.filter(name=name).delete()
+
+
+def remove_movement(movement):
+    Movement.objects.filter(id=movement).delete()
 
 
 def _get_no_recording():

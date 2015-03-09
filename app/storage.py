@@ -17,7 +17,9 @@ class Storage(object):
         return list(get_photos())
 
     def get_all_movements(self):
-        return []
+        from home.models import get_movements
+
+        return list(get_movements())
 
     def delete_recording(self, name):
         from webcam import settings
@@ -32,7 +34,7 @@ class Storage(object):
         self._remove_photo_from_database(name)
 
     def delete_movement(self, movement):
-        pass
+        self._remove_movement_from_database(movement)
 
     def save_photo(self, photo):
         self._save_photo(photo)
@@ -57,6 +59,11 @@ class Storage(object):
         from home.models import remove_photo
 
         remove_photo(name)
+
+    def _remove_movement_from_database(self, name):
+        from home.models import remove_movement
+
+        remove_movement(name)
 
     def _save_recording(self, recording):
         from webcam import settings
