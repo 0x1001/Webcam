@@ -92,7 +92,7 @@ class RPiWebcam(webcambase.WebcamBase):
     def _delete_oldest_photos(self):
         photos = self._storage.get_all_photos()
         for p in photos[_MAX_PHOTOS_COUNT:]:
-            self._storage.delete_photo(p.name)
+            self._storage.delete_photo(p.name, p.thumbnail)
 
     def _delete_oldest_movements(self):
         movements = self._storage.get_all_movements()
