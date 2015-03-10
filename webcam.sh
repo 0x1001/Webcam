@@ -16,24 +16,44 @@ if [ "$CMD" == "" ]; then
     exit 0
 fi
 
+cd $(dirname "${BASH_SOURCE[0]}")
+
 function start_app {
+    if [ -f app.pid ]; then
+        pid=`cat app.pid`
+        echo "Already running! Pid: $pid"
+        exit 1
+    fi
     date >> app.log
     python app/app.py >> app.log 2>&1 &
     echo $! > app.pid
 }
 
 function stat_web {
+    if [ -f web.pid ]; then
+        pid=`cat web.pid`
+        echo "Already running! Pid: $pid"
+        exit 1
+    fi
     python web/manage.py runserver [::]:80 > web.log 2>&1 &
     echo $! > web.pid
 }
 
 function stop_app {
+    if [ ! -f app.pid ]; then
+        echo "Notihng to stop. It is not running!"
+        exit 1
+    fi
     pid=`cat app.pid`
     kill -INT $pid
     rm app.pid
 }
 
 function stop_web {
+    if [ ! -f web.pid ]; then
+        echo "Notihng to stop. It is not running!"
+        exit 1
+    fi
     pid=`cat web.pid`
     pkill -TERM -P $pid
     rm web.pid
