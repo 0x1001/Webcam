@@ -1,4 +1,5 @@
-- Check if 30% motion max samples is enough to detect motion on entire screen
+- Review all tests
+- Create basic install script
 
 Next:
 - Add ability to record

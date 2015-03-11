@@ -4,11 +4,6 @@
 {% block Stream %}active{% endblock %}
 
 {% block body %}
-<h1 class="page-header">Stream Live</span></h1>
-<div class="embed-responsive embed-responsive-16by9">
-  <img class="embed-responsive-item" id="stream" onload="stream_data()" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==">
-</div>
-
 <script>
 function stream_data(){
     $.when(stream_req()).done(function(input_data){
@@ -20,4 +15,10 @@ function stream_req() {
     return $.ajax("{% url 'home.views.stream_data' %}");
 }
 </script>
+
+<h1 class="page-header">Stream Live</span></h1>
+<div class="embed-responsive embed-responsive-16by9">
+  <img class="embed-responsive-item" id="stream" onload="stream_data()" src="data:image/png;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+</div>
+
 {% endblock %}

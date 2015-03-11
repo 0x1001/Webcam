@@ -18,12 +18,26 @@ fi
 
 cd $(dirname "${BASH_SOURCE[0]}")
 
+function wait_for_pid {
+    pid=$1
+    while [ true ]; do
+        if [ -z "$(ps -A|grep python|grep $pid)" ]; then
+            break
+        fi
+        sleep 0.2
+    done
+}
+
 function start_app {
     if [ -f app.pid ]; then
-        pid=`cat app.pid`
-        echo "Already running! Pid: $pid"
-        exit 1
+        pid=$(cat app.pid)
+
+        if [ -n "$(ps -A|grep python|grep $pid)" ]; then
+            echo "It is already running! PID: $pid"
+            exit 1
+        fi
     fi
+
     date >> app.log
     python app/app.py >> app.log 2>&1 &
     echo $! > app.pid
@@ -31,10 +45,14 @@ function start_app {
 
 function stat_web {
     if [ -f web.pid ]; then
-        pid=`cat web.pid`
-        echo "Already running! Pid: $pid"
-        exit 1
+        pid=$(cat web.pid)
+
+        if [ -n "$(ps -A|grep python|grep $pid)" ]; then
+            echo "It is already running! PID: $pid"
+            exit 1
+        fi
     fi
+
     python web/manage.py runserver [::]:80 > web.log 2>&1 &
     echo $! > web.pid
 }
@@ -44,8 +62,9 @@ function stop_app {
         echo "Notihng to stop. It is not running!"
         exit 1
     fi
-    pid=`cat app.pid`
+    pid=$(cat app.pid)
     kill -INT $pid
+    wait_for_pid $pid
     rm app.pid
 }
 
@@ -54,8 +73,9 @@ function stop_web {
         echo "Notihng to stop. It is not running!"
         exit 1
     fi
-    pid=`cat web.pid`
+    pid=$(cat web.pid)
     pkill -TERM -P $pid
+    wait_for_pid $pid
     rm web.pid
 }
 
