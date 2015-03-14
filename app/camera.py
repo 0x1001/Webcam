@@ -1,6 +1,7 @@
 _RESOLUTION = (1280, 720)
 _MOTION_RECORDING_TIME = 20
 _FRAMERATE = 30
+_ROTATE = 270
 
 
 class CameraException(Exception):
@@ -15,6 +16,7 @@ class Camera(object):
 
         self._camera = picamera.PiCamera(framerate=_FRAMERATE, resolution=_RESOLUTION)
         self._camera.led = False
+        self._camera.rotation = _ROTATE
 
         self._motion_recording = None
         self._motion_channel = 1
