@@ -23,3 +23,6 @@ sudo apt-get install python-imaging
 
 # Gevent
 sudo pip install gevent
+
+# MP4Box
+sudo apt-get install gpac
