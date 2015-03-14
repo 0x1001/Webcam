@@ -4,12 +4,17 @@ Raspberry Pi Web Camera is web camera build on Raspberry Pi 2 which uses Raspber
 
   - Interface via web page
   - Motion detection
-  - Taking photos and recordings
+  - Photos and Recordings
 
-### Version
+## Screenshots
+- [Home page]
+- [Photos]
+- [Movements list]
+
+## Version
 1.0.0
 
-### List of third party libraries
+## List of third party libraries
 - [Picamera]
 - [NumPy]
 - [Django]
@@ -17,10 +22,41 @@ Raspberry Pi Web Camera is web camera build on Raspberry Pi 2 which uses Raspber
 - [Simplex]
 - [PIL]
 
-License
-----
+## Installation
+
+You need to get this repo to your Raspberry Pi by doing:
+```sh
+$ git clone https://github.com/0x1001/Webcam.git
+```
+Then run installer:
+```sh
+$ cd Webcam
+$ ./install.sh
+```
+Activate Raspberry Pi Camera if you haven't done that yet:
+```sh
+$ sudo raspi-config
+```
+
+## Want to contribute?
+
+Anyone is welcome to contribute to this project :).
+Just contact me on Github.
+
+## Todo
+
+ - Recordings on demand
+ - Photos on demand
+ - Time lapse videos
+ - Recording and photo schedule
+
+## License
 
 GNU GENERAL PUBLIC LICENSE
+
+[Home page]:https://raw.githubusercontent.com/0x1001/Webcam/master/screenshots/home.png
+[Photos]:https://raw.githubusercontent.com/0x1001/Webcam/master/screenshots/photos.png
+[Movements list]:https://raw.githubusercontent.com/0x1001/Webcam/master/screenshots/movements.png
 
 [Picamera]:http://picamera.readthedocs.org/
 [NumPy]:http://www.numpy.org/
