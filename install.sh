@@ -25,4 +25,4 @@ sudo apt-get install python-imaging
 sudo pip install gevent
 
 # MP4Box
-sudo apt-get install gpac
+sudo apt-get install -y gpac

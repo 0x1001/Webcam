@@ -53,7 +53,7 @@ function stat_web {
         fi
     fi
 
-    python web/manage.py runserver [::]:80 > web.log 2>&1 &
+    python web/manage.py runserver 0.0.0.0:80 > web.log 2>&1 &
     echo $! > web.pid
 }
 

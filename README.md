@@ -38,6 +38,16 @@ Activate Raspberry Pi Camera if you haven't done that yet:
 $ sudo raspi-config
 ```
 
+## Starting and Stopping
+
+```sh
+$ sudo ./webcam.sh start
+```
+
+```sh
+$ sudo ./webcam.sh stop
+```
+
 ## Want to contribute?
 
 Anyone is welcome to contribute to this project :).

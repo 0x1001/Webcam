@@ -102,7 +102,7 @@ def restart_app(request):
     time.sleep(2)
     subprocess.Popen(start_cmd, cwd=base_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 
-    return redirect('home.views.get_config')
+    return redirect('home.views.configuration')
 
 
 def restart_pi(request):
@@ -111,7 +111,7 @@ def restart_pi(request):
     cmd = ["reboot"]
     subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 
-    return redirect('home.views.get_config')
+    return redirect('home.views.configuration')
 
 
 def shutdown_pi(request):
@@ -120,4 +120,4 @@ def shutdown_pi(request):
     cmd = ["shutdown", "-h", "now"]
     subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
 
-    return redirect('home.views.get_config')
+    return redirect('home.views.configuration')
