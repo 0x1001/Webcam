@@ -1,3 +1,6 @@
+Bugs:
+- Runs out of memory sometimes. Probably because of db lock.
+
 Next:
 - Add ability to record
 - Add ability to take photo
