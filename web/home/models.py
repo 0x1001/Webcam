@@ -1,5 +1,8 @@
 from django.db import models
 import datetime
+import filelock
+
+_DB_LOCK = "db.lock"
 
 
 class Photo(models.Model):
@@ -22,47 +25,56 @@ class Movement(models.Model):
 
 
 def add_photo(name, thumbnail, time):
-    Photo(name=name, thumbnail=thumbnail, time=time).save()
+    with filelock.FileLock(_DB_LOCK):
+        Photo(name=name, thumbnail=thumbnail, time=time).save()
 
 
 def add_recording(name, time, lenght, photo):
-    p = Photo.objects.filter(name=photo).first()
-    Recording(name=name, time=time, lenght=lenght, photo=p).save()
+    with filelock.FileLock(_DB_LOCK):
+        p = Photo.objects.filter(name=photo).first()
+        Recording(name=name, time=time, lenght=lenght, photo=p).save()
 
 
 def add_movement(time, recording, photo):
-    p = Photo.objects.filter(name=photo).first()
-    r = Recording.objects.filter(name=recording).first()
-    Movement(time=time, recording=r, photo=p).save()
+    with filelock.FileLock(_DB_LOCK):
+        p = Photo.objects.filter(name=photo).first()
+        r = Recording.objects.filter(name=recording).first()
+        Movement(time=time, recording=r, photo=p).save()
 
 
 def get_recordings():
-    return Recording.objects.exclude(name="norecording").order_by('-time').all()
+    with filelock.FileLock(_DB_LOCK):
+        return list(Recording.objects.exclude(name="norecording").order_by('-time').all())
 
 
 def get_photos():
-    return Photo.objects.exclude(name="nophoto").order_by('-time').all()
+    with filelock.FileLock(_DB_LOCK):
+        return list(Photo.objects.exclude(name="nophoto").order_by('-time').all())
 
 
 def get_movements():
-    return Movement.objects.order_by('-time').all()
+    with filelock.FileLock(_DB_LOCK):
+        return list(Movement.objects.order_by('-time').all())
 
 
 def remove_recording(name):
-    r = _get_no_recording()
-    Movement.objects.filter(recording__name=name).update(recording=r)
-    Recording.objects.filter(name=name).delete()
+    with filelock.FileLock(_DB_LOCK):
+        r = _get_no_recording()
+        Movement.objects.filter(recording__name=name).update(recording=r)
+        Recording.objects.filter(name=name).delete()
 
 
 def remove_photo(name):
-    p = _get_no_photo()
+    with filelock.FileLock(_DB_LOCK):
+        p = _get_no_photo()
 
-    Movement.objects.filter(photo__name=name).update(photo=p)
-    Photo.objects.filter(name=name).delete()
+        Movement.objects.filter(photo__name=name).update(photo=p)
+        Photo.objects.filter(name=name).delete()
 
 
 def remove_movement(movement):
-    Movement.objects.filter(id=movement).delete()
+    with filelock.FileLock(_DB_LOCK):
+        Movement.objects.filter(id=movement).delete()
 
 
 def _get_no_recording():

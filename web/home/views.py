@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from home.models import Movement
+from home.models import get_movements
 from home.models import get_recordings
 from home.models import get_photos
 from django.core.servers.basehttp import FileWrapper
@@ -57,7 +57,7 @@ def photos(request, photo=None, page=1):
 def movements(request, page=1):
     page = int(page)
 
-    mov_all = Movement.objects.order_by('-time').all()
+    mov_all = get_movements()
     paginator = Paginator(mov_all, 50)
 
     try:

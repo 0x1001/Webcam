@@ -10,3 +10,9 @@ class FunctionTests(TestCase):
 
     def test_remove_recording(self):
         remove_recording("test")
+
+    def test_filelock(self):
+        from home import filelock
+
+        with filelock.FileLock("test.lock"):
+            pass

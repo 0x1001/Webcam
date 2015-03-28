@@ -1,8 +1,6 @@
-- Review all tests
-- Create basic install script
-
 Next:
 - Add ability to record
 - Add ability to take photo
 - Add ability to take time lapse
 - Configuration via page
+- Create lock to handle database concurency

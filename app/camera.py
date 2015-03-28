@@ -1,7 +1,7 @@
 _RESOLUTION = (1280, 720)
 _MOTION_RECORDING_TIME = 20
 _FRAMERATE = 30
-_ROTATE = 270
+_ROTATE = 90
 
 
 class CameraException(Exception):
