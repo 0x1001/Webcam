@@ -33,6 +33,7 @@ class Camera(object):
         self._photo_channel = 2
         self._photo_latest = None
         self._photo_camera = threading.Thread(target=self._photo_camera_thread)
+        self._photo_lock = threading.RLock()
 
         self._exit = threading.Event()
 
@@ -93,7 +94,9 @@ class Camera(object):
 
     def take_photo(self):
         import photo
-        return photo.Photo(self._photo_latest)
+
+        with self._photo_lock:
+            return photo.Photo(self._photo_latest)
 
     def close(self):
         self._exit.set()
@@ -133,7 +136,9 @@ class Camera(object):
                                  splitter_port=self._photo_channel)
 
             stream.seek(0)
-            self._photo_latest = stream.read()
+
+            with self._photo_lock:
+                self._photo_latest = stream.read()
 
     def _led_on(self, recording=False, motion_recording=False):
         if recording or motion_recording:

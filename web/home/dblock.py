@@ -1,8 +1,11 @@
-class FileLock(object):
-    def __init__(self, filename):
+_DB_LOCK = "db.lock"
+
+
+class DBLock(object):
+    def __init__(self):
         import os
 
-        self.filename = filename
+        self.filename = _DB_LOCK
         self.fd = None
         self.pid = os.getpid()
 
