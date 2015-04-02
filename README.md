@@ -12,7 +12,7 @@ Raspberry Pi Web Camera is web camera build on Raspberry Pi 2 which uses Raspber
 - [Movements list]
 
 ## Version
-1.0.0
+1.1.0
 
 ## List of third party libraries
 - [Picamera]
@@ -47,6 +47,17 @@ $ sudo ./webcam.sh start
 ```sh
 $ sudo ./webcam.sh stop
 ```
+
+## Change log
+
+- 1.1.0
+    - Adding lock to protect database access
+
+- 1.0.0
+    - Initial version
+    - Motion detection with video recordings
+    - Web page interface
+    - Raspberry PI Camera support
 
 ## Want to contribute?
 
