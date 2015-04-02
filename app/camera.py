@@ -1,7 +1,7 @@
 _RESOLUTION = (1280, 720)
 _MOTION_RECORDING_TIME = 20
 _FRAMERATE = 30
-_ROTATE = 90
+_ROTATE = 270
 
 
 class CameraException(Exception):
@@ -135,10 +135,8 @@ class Camera(object):
                                  use_video_port=True,
                                  splitter_port=self._photo_channel)
 
-            stream.seek(0)
-
             with self._photo_lock:
-                self._photo_latest = stream.read()
+                self._photo_latest = stream.getvalue()
 
     def _led_on(self, recording=False, motion_recording=False):
         if recording or motion_recording:

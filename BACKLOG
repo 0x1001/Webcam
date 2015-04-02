@@ -1,5 +1,22 @@
 Bugs:
 - Runs out of memory sometimes. Probably because of db lock.
+- Photo sometimes are None. 
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 552, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.7/threading.py", line 505, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/home/pi/gitwork/Webcam/app/rpiwebcam.py", line 81, in _do
+    self._storage.save_photo(photo)
+  File "/home/pi/gitwork/Webcam/app/storage.py", line 41, in save_photo
+    self._save_photo(photo)
+  File "/home/pi/gitwork/Webcam/app/storage.py", line 77, in _save_photo
+    photo.save(settings.STATICFILES_DIRS[1])
+  File "/home/pi/gitwork/Webcam/app/photo.py", line 18, in save
+    self._save(file_path, self._photo_data)
+  File "/home/pi/gitwork/Webcam/app/photo.py", line 23, in _save
+    out.write(data)
+TypeError: must be string or buffer, not None
 
 Next:
 - Add ability to record
