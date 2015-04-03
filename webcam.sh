@@ -39,7 +39,7 @@ function start_app {
     fi
 
     date >> app.log
-    python app/app.py >> app.log 2>&1 &
+    python -u app/app.py >> app.log 2>&1 &
     echo $! > app.pid
 }
 
@@ -53,7 +53,7 @@ function stat_web {
         fi
     fi
 
-    python web/manage.py runserver 0.0.0.0:80 > web.log 2>&1 &
+    python -u web/manage.py runserver 0.0.0.0:80 > web.log 2>&1 &
     echo $! > web.pid
 }
 

@@ -52,6 +52,8 @@ $ sudo ./webcam.sh stop
 
 - 1.1.0
     - Adding lock to protect database access
+    - Bug fix: Photo stream sometimes was None
+    - Bug fix: Recording memory leak fix
 
 - 1.0.0
     - Initial version
