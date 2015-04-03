@@ -34,6 +34,7 @@ class Camera(object):
         self._photo_latest = None
         self._photo_camera = threading.Thread(target=self._photo_camera_thread)
         self._photo_lock = threading.RLock()
+        self._photo_ready = threading.Event()
 
         self._exit = threading.Event()
 
@@ -95,6 +96,8 @@ class Camera(object):
     def take_photo(self):
         import photo
 
+        self._photo_ready.wait()
+
         with self._photo_lock:
             return photo.Photo(self._photo_latest)
 
@@ -137,6 +140,9 @@ class Camera(object):
 
             with self._photo_lock:
                 self._photo_latest = stream.getvalue()
+
+            stream.close()
+            self._photo_ready.set()
 
     def _led_on(self, recording=False, motion_recording=False):
         if recording or motion_recording:
