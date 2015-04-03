@@ -10,6 +10,27 @@ def _configure_exit(webcam):
     signal.pause()
 
 
+def _debug():
+    from pympler import summary
+    import sys
+    import time
+    import datetime
+    import StringIO
+    import gc
+
+    while True:
+        temp = sys.stdout
+        sys.stdout = StringIO.StringIO()
+        summary.print_(summary.summarize(gc.get_objects()))
+        report = sys.stdout.getvalue()
+        sys.stdout.close()
+        sys.stdout = temp
+
+        with open("report_" + str(datetime.datetime.now()) + ".txt", "w") as fp:
+            fp.write(report)
+
+        time.sleep(600)
+
 if __name__ == "__main__":
     import threading
     import rpiwebcam
@@ -25,6 +46,10 @@ if __name__ == "__main__":
     stream = threading.Thread(target=webcam.stream)
     stream.setDaemon(True)
     stream.start()
+
+    #_debug_thread = threading.Thread(target=_debug)
+    #_debug_thread.setDaemon(True)
+    #_debug_thread.start()
 
     _configure_exit(webcam)
 

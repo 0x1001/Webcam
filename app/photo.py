@@ -3,6 +3,7 @@ _THUMBNAIL_SIZE = 320, 180
 
 class Photo(object):
     def __init__(self, stream):
+        print "Creating photo object: " + str(hash(self))
         self.name = None
         self.time = None
         self.thumbnail = None
@@ -18,6 +19,10 @@ class Photo(object):
         self._save(file_path, self._photo_data)
         self._save(thumbnail_path, self._thumbnail(_THUMBNAIL_SIZE))
 
+        import gc
+        gc.collect()
+        print "Photo ref: " + str(gc.get_referrers(self))
+
     def _save(self, file_path, data):
         with open(file_path, "wb") as out:
             out.write(data)
@@ -30,8 +35,10 @@ class Photo(object):
         im.thumbnail(size, Image.ANTIALIAS)
         output = StringIO.StringIO()
         im.save(output, "JPEG")
+        img = output.getvalue()
+        output.close()
 
-        return output.getvalue()
+        return img
 
     def get_contents(self, size=None):
 
@@ -56,3 +63,11 @@ class Photo(object):
         self.time = self.time.replace(tzinfo=timezone.utc)
         self.name = self.time.strftime("%Y%m%d%H%M%S%f.jpeg")
         self.thumbnail = self.time.strftime("%Y%m%d%H%M%S%f_t.jpeg")
+
+    def __del__(self):
+        try:
+            del self._photo_data
+        except AttributeError:
+            pass
+
+        print "Deleting photo object: " + str(hash(self))

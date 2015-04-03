@@ -6,6 +6,8 @@ class Recording(object):
     def __init__(self, stream, lenght):
         import command
 
+        print "Creating recording object: " + str(hash(self))
+
         self.name = None
         self.time = None
         self.lenght = lenght
@@ -46,6 +48,12 @@ class Recording(object):
         for command in self._processing_list:
             command.execute()
 
+        self._processing_list = []
+
+        import gc
+        gc.collect()
+        print "Recording ref: " + str(gc.get_referrers(self))
+
     def _set_attrs(self):
         import tempfile
         import datetime
@@ -70,6 +78,8 @@ class Recording(object):
         self._convert(self._temp_path, self.path)
         os.unlink(self._temp_path)
 
+        self._stream = None
+
     def _convert(self, src, dst):
         import subprocess
 
@@ -91,3 +101,11 @@ class Recording(object):
             raise RecordingException("Cannot cut recording: " + self.path)
 
         self.lenght = stop - start
+
+    def __del__(self):
+        try:
+            del self._stream
+        except AttributeError:
+            pass
+
+        print "Deleting recording object: " + str(hash(self))

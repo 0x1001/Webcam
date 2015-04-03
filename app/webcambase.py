@@ -1,6 +1,8 @@
 class WebcamBase(object):
     def record_motion(self):
         while not self._exit():
+            photo = None
+            recording = None
             self._start_motion_detection()
             if self._wait_for_motion():
                 photo = self._take_photo()
