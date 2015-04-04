@@ -30,8 +30,10 @@ class Photo(object):
         im.thumbnail(size, Image.ANTIALIAS)
         output = StringIO.StringIO()
         im.save(output, "JPEG")
+        img_data = output.getvalue()
+        output.close()
 
-        return output.getvalue()
+        return img_data
 
     def get_contents(self, size=None):
 

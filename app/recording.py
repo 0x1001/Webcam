@@ -46,6 +46,8 @@ class Recording(object):
         for command in self._processing_list:
             command.execute()
 
+        self._processing_list = []
+
     def _set_attrs(self):
         import tempfile
         import datetime
