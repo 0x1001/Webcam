@@ -1,18 +1,26 @@
-def _configure_exit(webcam):
+# This whole multiprocessing thing is because of memory leak in picamera.
+# Every few hours or days webcam has to be restarted.
+# This is very unfortunate. I hope future versions of picamera will fix this.
+
+import multiprocessing
+
+stop = multiprocessing.Event()
+
+
+def _ignor_signal():
+    """
+        Multiprocessing dosent work well with signals.
+        This function is used to ignore keyboard interrupt in child process.
+    """
     import signal
-
-    def _signal_handler(signal, frame):
-        print 'Exiting...'
-        webcam.close()
-
-    signal.signal(signal.SIGINT, _signal_handler)
-    print 'Press Ctrl+C to exit'
-    signal.pause()
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
-if __name__ == "__main__":
+def webcam():
     import threading
     import rpiwebcam
+
+    _ignor_signal()
 
     webcam = rpiwebcam.RPiWebcam()
 
@@ -26,7 +34,42 @@ if __name__ == "__main__":
     stream.setDaemon(True)
     stream.start()
 
-    _configure_exit(webcam)
+    stop.wait()
 
+    webcam.close()
     record_motion.join()
     cleaner.join()
+
+
+def _configure_exit(exit_event):
+    import signal
+
+    def _signal_handler(signal, frame):
+        print 'Exiting...'
+        exit_event.set()
+
+    signal.signal(signal.SIGINT, _signal_handler)
+    print 'Press Ctrl+C to exit'
+    signal.pause()
+
+
+def app_thread(exit_event):
+    while not exit_event.is_set():
+        p = multiprocessing.Process(target=webcam)
+        p.start()
+        exit_event.wait(24 * 3600)
+        stop.set()
+        p.join()
+        stop.clear()
+
+if __name__ == "__main__":
+    import threading
+
+    exit_event = threading.Event()
+
+    app = threading.Thread(target=app_thread, args=(exit_event,))
+    app.start()
+
+    _configure_exit(exit_event)
+
+    app.join()

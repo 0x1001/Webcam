@@ -1,7 +1,7 @@
 _RESOLUTION = (1280, 720)
 _MOTION_RECORDING_TIME = 20
 _FRAMERATE = 30
-_ROTATE = 270
+_ROTATE = 90
 
 
 class CameraException(Exception):
@@ -11,6 +11,13 @@ class CameraException(Exception):
 class Camera(object):
     def __init__(self):
         import threading
+
+        self._exit = threading.Event()
+
+        self._setup_camera()
+        self._setup_photo()
+
+    def _setup_camera(self):
         import picamera
         import motion
 
@@ -26,17 +33,14 @@ class Camera(object):
                                                              splitter_port=self._motion_channel,
                                                              seconds=_MOTION_RECORDING_TIME)
 
-        self._recording = None
-        self._recording_channel = 0
-        self._recording_flag = False
+    def _setup_photo(self):
+        import threading
 
         self._photo_channel = 2
         self._photo_latest = None
         self._photo_camera = threading.Thread(target=self._photo_camera_thread)
         self._photo_lock = threading.RLock()
         self._photo_ready = threading.Event()
-
-        self._exit = threading.Event()
 
     def start(self):
         self._photo_camera.start()
@@ -58,6 +62,10 @@ class Camera(object):
         ore = orevent.OrEvent(exit_event, self._motion_detector.event())
         ore.wait()
         ore.close()
+
+        if exit_event.is_set():
+            self._camera.stop_recording(splitter_port=self._motion_channel)
+
         return not exit_event.is_set()
 
     def record_motion(self, exit_event):
@@ -74,25 +82,6 @@ class Camera(object):
 
         return self._process_motion_recording(self._motion_recording)
 
-    def start_recording(self):
-        import io
-
-        self._led_on(recording=True)
-        self._recording = io.BytesIO()
-        self._camera.start_recording(self._recording,
-                                     format='h264',
-                                     splitter_port=self._recording_channel)
-
-    def wait_for_recording(self, time=5):
-        self._camera.wait_recording(time, splitter_port=self._recording_channel)
-
-    def stop_recording(self):
-        self._camera.stop_recording(splitter_port=self._recording_channel)
-        self._led_off(recording=True)
-        self._recording.seek(0)
-
-        return self._recording.read()
-
     def take_photo(self):
         import photo
 
@@ -103,9 +92,31 @@ class Camera(object):
 
     def close(self):
         self._exit.set()
-        self._camera.close()
+
         if self._photo_camera.is_alive():
             self._photo_camera.join()
+
+        self._wait_for_camera_stop()
+
+        try:
+            self._camera.close()
+        except Exception:
+            pass  # Ignor errors
+
+    def _wait_for_camera_stop(self):
+        import picamera
+        import time
+
+        while True:
+            try:
+                self._camera._check_recording_stopped()
+            except picamera.exc.PiCameraRuntimeError:
+                time.sleep(0.2)
+                continue
+            else:
+                break
+
+        time.sleep(0.2)
 
     def _process_motion_recording(self, stream):
         import picamera
@@ -144,22 +155,14 @@ class Camera(object):
             stream.close()
             self._photo_ready.set()
 
-    def _led_on(self, recording=False, motion_recording=False):
-        if recording or motion_recording:
-            self._camera.led = True
-
-        if recording:
-            self._recording_flag = True
-
+    def _led_on(self, motion_recording=False):
         if motion_recording:
+            self._camera.led = True
             self._motion_recording_flag = True
 
-    def _led_off(self, recording=False, motion_recording=False):
-        if recording:
-            self._recording_flag = False
-
+    def _led_off(self, motion_recording=False):
         if motion_recording:
             self._motion_recording_flag = False
 
-        if not self._recording_flag and not self._motion_recording_flag:
+        if not self._motion_recording_flag:
             self._camera.led = False
