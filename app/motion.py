@@ -14,13 +14,20 @@ class Motion(picamera.array.PiMotionAnalysis):
         self._skip = 0
 
     def analyse(self, a):
-        import numpy as np
+        import threading
 
         if self._skip == _SKIP_FRAMES:
             self._skip = 0
         else:
             self._skip += 1
             return
+
+        t = threading.Thread(target=self._analyse_thread, args=(a, ))
+        t.setDaemon(True)
+        t.start()
+
+    def _analyse_thread(self, a):
+        import numpy as np
 
         r = np.sqrt(
             np.square(a['x'].astype(np.float)) +

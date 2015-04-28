@@ -57,11 +57,11 @@ class Camera(object):
                                      motion_output=self._motion_detector)
 
     def wait_for_motion(self, exit_event):
-        import orevent
+        motion_event = self._motion_detector.event()
 
-        ore = orevent.OrEvent(exit_event, self._motion_detector.event())
-        ore.wait()
-        ore.close()
+        while True:
+            if exit_event.wait(0.2) or motion_event.wait(0.2):
+                break
 
         if exit_event.is_set():
             self._camera.stop_recording(splitter_port=self._motion_channel)
