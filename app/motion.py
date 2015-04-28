@@ -1,6 +1,7 @@
 import picamera.array
 
-_MIN_SAMPLES = 3  # min samples with motion. Range: 0% - 100%
+_THRESHOLD = 3
+_SKIP_FRAMES = 4
 
 
 class Motion(picamera.array.PiMotionAnalysis):
@@ -10,28 +11,52 @@ class Motion(picamera.array.PiMotionAnalysis):
         super(Motion, self).__init__(*args, **kwargs)
 
         self._event = threading.Event()
-        self._last = None
-        self._min_samples = None
+        self._skip = 0
 
     def analyse(self, a):
         import numpy as np
 
+        if self._skip == _SKIP_FRAMES:
+            self._skip = 0
+        else:
+            self._skip += 1
+            return
+
         r = np.sqrt(
             np.square(a['x'].astype(np.float)) +
             np.square(a['y'].astype(np.float))
-            ).clip(0, 1)
+            ).clip(0, 255)  # Magnitude: 0 to 255
 
-        if self._min_samples is None:
-            # Ex: 81 x 40 (for recording resolution 1280 x 720) x min samples in percent
-            self._min_samples = len(r) * len(r[0]) * _MIN_SAMPLES * 0.01
+        phi = (np.arctan2(
+              a['y'].astype(np.float),
+              a['x'].astype(np.float)) +
+              np.pi) * 180 / (2 * np.pi)  # Angle degree: -90 to 90.
 
-        if self._last is not None:
-            diff = np.subtract(self._last, r)
-            print (diff == 1).sum()
-            if (diff == 1).sum() > self._min_samples or (diff == -1).sum() > self._min_samples:
-                self._event.set()
+        for x in range(len(r)):
+            for y in range(len(r[0])):
+                if r[x][y] > _THRESHOLD:
+                    if self._check_adjacent(x, y, r, phi):
+                        self._event.set()
 
-        self._last = r
+    def _check_adjacent(self, x, y, r, phi):
+        mag_min = r[x][y] - 2
+        mag_max = r[x][y] + 2
+        ang_min = phi[x][y] - 10
+        ang_max = phi[x][y] + 10
+        hits = 0
+        for i in [-1, 0, 1]:
+            for j in [-1, 0, 1]:
+                try:
+                    r[x + i][y + j]
+                    phi[x + i][y + j]
+                except IndexError:
+                    continue
+
+                if mag_min < r[x + i][y + j] and r[x + i][y + j] > mag_max:
+                    if ang_min < phi[x + i][y + j] and phi[x + i][y + j] > ang_max:
+                        hits += 1
+
+        return hits >= 5
 
     def event(self):
         return self._event
