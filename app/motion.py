@@ -1,6 +1,6 @@
 import picamera.array
 
-_MIN_SAMPLES = 4  # min samples with motion. Range: 0% - 100%
+_MIN_SAMPLES = 3  # min samples with motion. Range: 0% - 100%
 
 
 class Motion(picamera.array.PiMotionAnalysis):
@@ -27,7 +27,7 @@ class Motion(picamera.array.PiMotionAnalysis):
 
         if self._last is not None:
             diff = np.subtract(self._last, r)
-
+            print (diff == 1).sum()
             if (diff == 1).sum() > self._min_samples or (diff == -1).sum() > self._min_samples:
                 self._event.set()
 
