@@ -2,6 +2,9 @@ import picamera.array
 
 _THRESHOLD = 3
 _SKIP_FRAMES = 4
+_MIN_FRAMES_WITH_MOTION = 2
+_MAG_ERROR = 2  # 2 in scale from 0 to 255
+_ANG_ERROR = 0.174  # 0.174 rad (about 10 deg)
 
 
 class Motion(picamera.array.PiMotionAnalysis):
@@ -47,6 +50,7 @@ class Motion(picamera.array.PiMotionAnalysis):
     def _processing(self):
         import numpy as np
 
+        frames_with_motion = 0
         while True:
             a = self._processing_queue.get()
 
@@ -58,9 +62,14 @@ class Motion(picamera.array.PiMotionAnalysis):
             phi = (np.arctan2(
                   a['y'].astype(np.float),
                   a['x'].astype(np.float)) +
-                  np.pi) * 180 / (2 * np.pi)  # Angle degree: -90 to 90.
+                  np.pi)  # Angle degree: -pi/2 to pi/2.
 
             if self._find_motion(r, phi):
+                frames_with_motion += 1
+            else:
+                frames_with_motion = 0
+
+            if frames_with_motion >= _MIN_FRAMES_WITH_MOTION:
                 self._event.set()
 
     def _find_motion(self, r, phi):
@@ -73,10 +82,10 @@ class Motion(picamera.array.PiMotionAnalysis):
         return False
 
     def _check_adjacent(self, x, y, r, phi):
-        mag_min = r[x][y] - 2
-        mag_max = r[x][y] + 2
-        ang_min = phi[x][y] - 10
-        ang_max = phi[x][y] + 10
+        mag_min = r[x][y] - _MAG_ERROR
+        mag_max = r[x][y] + _MAG_ERROR
+        ang_min = phi[x][y] - _ANG_ERROR
+        ang_max = phi[x][y] + _ANG_ERROR
         hits = 0
         for i in [-1, 0, 1]:
             for j in [-1, 0, 1]:
