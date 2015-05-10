@@ -51,7 +51,8 @@ $ sudo ./webcam.sh stop
 
 ## Change log
 - 1.2.0
-    - Adding photos of camera device
+    - Change to motion detection algorithm
+    - Adding images of camera device
     - Bug fix: Workaround for memory leak in picamera
 
 - 1.1.0
