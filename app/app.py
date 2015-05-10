@@ -1,6 +1,6 @@
-# This whole multiprocessing thing is because of memory leak in picamera.
+# This whole multiprocessing thing is because of small memory leak.
 # Every few hours or days webcam has to be restarted.
-# This is very unfortunate. I hope future versions of picamera will fix this.
+# This is very unfortunate.
 
 import multiprocessing
 
