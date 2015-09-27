@@ -92,7 +92,7 @@ STATIC_URL = '/' + PREFIX + 'static/'
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "recordings"),
-    os.path.join(BASE_DIR, "photos"),
+    os.path.join(BASE_DIR, "tmp", "recordings"),
+    os.path.join(BASE_DIR, "tmp", "photos"),
     os.path.join(BASE_DIR, "static"),
 )
