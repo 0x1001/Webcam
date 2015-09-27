@@ -1,3 +1,6 @@
+class StorageException(Exception):
+    pass
+
 class Storage(object):
     def __init__(self):
         self._init_django()
@@ -24,15 +27,23 @@ class Storage(object):
     def delete_recording(self, name):
         from webcam import settings
 
-        self._delete(settings.STATICFILES_DIRS[0], name)
-        self._remove_recording_from_database(name)
+        try:
+            self._delete(settings.STATICFILES_DIRS[0], name)
+        except StorageException:
+            pass
+        else:
+            self._remove_recording_from_database(name)
 
     def delete_photo(self, name, thumbnail):
         from webcam import settings
 
-        self._delete(settings.STATICFILES_DIRS[1], name)
-        self._delete(settings.STATICFILES_DIRS[1], thumbnail)
-        self._remove_photo_from_database(name)
+        try:
+            self._delete(settings.STATICFILES_DIRS[1], name)
+            self._delete(settings.STATICFILES_DIRS[1], thumbnail)
+        except StorageException:
+            pass
+        else:
+            self._remove_photo_from_database(name)
 
     def delete_movement(self, movement):
         self._remove_movement_from_database(movement)
@@ -49,7 +60,10 @@ class Storage(object):
 
         path = os.path.join(root, name)
         if os.path.isfile(path):
-            os.unlink(path)
+            try:
+                os.unlink(path)
+            except OSError as error:
+                raise StorageException(error)
 
     def _remove_recording_from_database(self, name):
         from home.models import remove_recording
