@@ -5,10 +5,6 @@ class Storage(object):
     def __init__(self):
         self._init_django()
 
-    def save_recording(self, recording, photo):
-        self._save_recording(recording)
-        self._add_recording_to_database(recording, photo)
-
     def get_all_recordings(self):
         from home.models import get_recordings
 
@@ -49,8 +45,24 @@ class Storage(object):
         self._remove_movement_from_database(movement)
 
     def save_photo(self, photo):
-        self._save_photo(photo)
+        import photo as photo_
+
+        try:
+            self._save_photo(photo)
+        except photo_.PhotoException as error:
+            raise StorageException(str(error))
+
         self._add_photo_to_database(photo)
+
+    def save_recording(self, recording, photo):
+        import recording as recording_
+
+        try:
+            self._save_recording(recording)
+        except recording_.RecordingException as error:
+            raise StorageException(str(error))
+
+        self._add_recording_to_database(recording, photo)
 
     def save_motion(self, recording, photo):
         self._add_motion_to_database(recording, photo)
@@ -63,6 +75,7 @@ class Storage(object):
             try:
                 os.unlink(path)
             except OSError as error:
+                print "Cannot delete: " + path + " Error: " + str(error)
                 raise StorageException(error)
 
     def _remove_recording_from_database(self, name):

@@ -66,18 +66,28 @@ class Recording(object):
     def _process(self):
         import os
 
-        with open(self._temp_path, 'wb') as out:
-            out.write(self._stream)
+        try:
+            with open(self._temp_path, 'wb') as out:
+                out.write(self._stream)
+        except IOError as error:
+            raise RecordingException(str(error))
 
-        self._convert(self._temp_path, self.path)
-        os.unlink(self._temp_path)
+        try:
+            self._convert(self._temp_path, self.path)
+        except RecordingException as error:
+            raise
+        finally:
+            os.unlink(self._temp_path)
 
     def _convert(self, src, dst):
         import subprocess
 
         cmd = "MP4Box -fps 30 -add " + src + " " + dst
 
-        ret = subprocess.call(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            ret = subprocess.call(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except OSError as error:
+            raise RecordingException(str(error))
 
         if ret != 0:
             raise RecordingException("Convertion to mp4 failed on " + src)
@@ -87,7 +97,10 @@ class Recording(object):
 
         cmd = "MP4Box -splitx " + str(start) + ":" + str(stop) + " " + self.path + " -out " + self.path
 
-        ret = subprocess.call(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            ret = subprocess.call(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except OSError as error:
+            raise RecordingException(str(error))
 
         if ret != 0:
             raise RecordingException("Cannot cut recording: " + self.path)

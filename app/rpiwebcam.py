@@ -84,11 +84,15 @@ class RPiWebcam(webcambase.WebcamBase):
 
     def _save_motion(self, recording, photo):
         import threading
+        import storage
 
         def _do():
-            self._storage.save_photo(photo)
-            self._storage.save_recording(recording, photo)
-            self._storage.save_motion(recording, photo)
+            try:
+                self._storage.save_photo(photo)
+                self._storage.save_recording(recording, photo)
+                self._storage.save_motion(recording, photo)
+            except storage.StorageException as error:
+                print "Error happend during saving motion: " + str(error)
 
         threading.Thread(target=_do).start()
 

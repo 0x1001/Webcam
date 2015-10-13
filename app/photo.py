@@ -1,6 +1,10 @@
 _THUMBNAIL_SIZE = 320, 180
 
 
+class PhotoException(Exception):
+    pass
+
+
 class Photo(object):
     def __init__(self, stream):
         self.name = None
@@ -19,8 +23,11 @@ class Photo(object):
         self._save(thumbnail_path, self._thumbnail(_THUMBNAIL_SIZE))
 
     def _save(self, file_path, data):
-        with open(file_path, "wb") as out:
-            out.write(data)
+        try:
+            with open(file_path, "wb") as out:
+                out.write(data)
+        except IOError as error:
+            raise PhotoException(str(error))
 
     def _thumbnail(self, size):
         import StringIO

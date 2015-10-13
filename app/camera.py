@@ -141,19 +141,24 @@ class Camera(object):
 
     def _photo_camera_thread(self):
         import io
+        from picamera.exc import PiCameraRuntimeError
 
         while not self._exit.wait(0.2):
             stream = io.BytesIO()
-            self._camera.capture(stream,
-                                 format='jpeg',
-                                 use_video_port=True,
-                                 splitter_port=self._photo_channel)
 
-            with self._photo_lock:
-                self._photo_latest = stream.getvalue()
-
-            stream.close()
-            self._photo_ready.set()
+            try:
+                self._camera.capture(stream,
+                                     format='jpeg',
+                                     use_video_port=True,
+                                     splitter_port=self._photo_channel)
+            except PiCameraRuntimeError as error:
+                print "Cannot capture photo for stream. Error: " + str(error)
+            else:
+                with self._photo_lock:
+                    self._photo_latest = stream.getvalue()
+            finally:
+                stream.close()
+                self._photo_ready.set()
 
     def _led_on(self, motion_recording=False):
         if motion_recording:
