@@ -5,3 +5,6 @@
 *.log
 *.mp4
 *.jpeg
+.venv
+.idea
+
