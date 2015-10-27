@@ -3,3 +3,5 @@
 *.coverage
 *.pid
 *.log
+*.mp4
+*.jpeg
