@@ -1,10 +1,5 @@
 Next:
-- Add ability to record
-- Add ability to take photo
-- Add ability to take time lapse
+- Change pagination to reflect occurrence time instead of movements count
 - Configuration via page
-- Create lock to handle database concurency
-- Add photo and recording viewer as separate page
-- Add caching for photos that were already loaded by browser
 - Add autorefresh to live stream page that accounts for sudden breaks in connection
 - Add password protection for configuration page
