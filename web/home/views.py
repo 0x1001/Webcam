@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from home.models import get_movements
-from home.models import get_recordings
-from home.models import get_photos
+from home.models import get_movement
 from django.core.servers.basehttp import FileWrapper
 from django.http import StreamingHttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -16,49 +15,11 @@ def about(request):
     return render(request, 'about.html')
 
 
-def recordings(request, recording=None, page=1):
-    page = int(page)
-
-    recordings_all = get_recordings()
-    paginator = Paginator(recordings_all, 20)
-
-    try:
-        recordings = paginator.page(page)
-    except PageNotAnInteger:
-        recordings = paginator.page(1)
-    except EmptyPage:
-        recordings = paginator.page(paginator.num_pages)
-
-    if recording is None and len(recordings.object_list) != 0:
-        recording = recordings[0].name
-
-    return render(request, 'recordings.html', {"recordings": recordings, "recording": recording})
-
-
-def photos(request, photo=None, page=1):
-    page = int(page)
-
-    photos_all = get_photos()
-    paginator = Paginator(photos_all, 20)
-
-    try:
-        photos = paginator.page(page)
-    except PageNotAnInteger:
-        photos = paginator.page(1)
-    except EmptyPage:
-        photos = paginator.page(paginator.num_pages)
-
-    if photo is None and len(photos.object_list) != 0:
-        photo = photos.object_list[0].name
-
-    return render(request, 'photos.html', {"photos": photos, "photo": photo})
-
-
 def movements(request, page=1):
     page = int(page)
 
     mov_all = get_movements()
-    paginator = Paginator(mov_all, 50)
+    paginator = Paginator(mov_all, 52)
 
     try:
         movements = paginator.page(page)
@@ -68,6 +29,11 @@ def movements(request, page=1):
         movements = paginator.page(paginator.num_pages)
 
     return render(request, 'movements.html', {"movements": movements})
+
+
+def movement_details(request, movement_id):
+    movement = get_movement(movement_id)
+    return render(request, 'movement_details.html', {"movement": movement})
 
 
 def stream(request):

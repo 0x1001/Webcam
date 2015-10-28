@@ -55,6 +55,11 @@ def get_movements():
         return list(Movement.objects.order_by('-time').all())
 
 
+def get_movement(id_):
+    with dblock.DBLock():
+        return Movement.objects.filter(id=id_).first()
+
+
 def remove_recording(name):
     with dblock.DBLock():
         r = _get_no_recording()

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block Movements %}active{% endblock %}
+
+{% block body %}
+<h1 class="page-header">Movement</h1>
+
+<div class="well">
+    {{ movement.time|date:"D jS M Y H:i" }} ({{ movement.time|timesince }} ago)<br>
+    Recorded for {{ movement.recording.lenght }} seconds
+</div>
+
+<div class="embed-responsive embed-responsive-16by9">
+  <img class="embed-responsive-item" src="{% static movement.photo.name %}">
+</div>
+
+<div class="embed-responsive embed-responsive-16by9">
+  <video class="embed-responsive-item" controls>
+    <source src="{% static movement.recording.name %}" type="video/mp4">
+    <span class="label label-danger">Your browser does not support the video.</span>
+  </video>
+</div>
+
+{% endblock %}
