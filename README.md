@@ -8,7 +8,6 @@ Raspberry Pi Web Camera is web camera build on Raspberry Pi 2 which uses Raspber
 
 ## Screenshots and Photos
 - [Home page]
-- [Photos]
 - [Movements list]
 - [Webcam device]
 
@@ -50,6 +49,12 @@ $ sudo ./webcam.sh stop
 ```
 
 ## Change log
+- 1.3.0
+    - Adding exception handling for camera and recordings
+    - Recordings and photos pages merged together as movements page
+    - Fixing bug in storage. Occasional OSError
+    - Adding auto refresh for Live stream page
+    
 - 1.2.0
     - Change to motion detection algorithm
     - Adding images of camera device
@@ -71,19 +76,11 @@ $ sudo ./webcam.sh stop
 Anyone is welcome to contribute to this project :).
 Just contact me on Github.
 
-## Todo
-
- - Recordings on demand
- - Photos on demand
- - Time lapse videos
- - Recording and photo schedule
-
 ## License
 
 GNU GENERAL PUBLIC LICENSE
 
 [Home page]:https://raw.githubusercontent.com/0x1001/Webcam/master/screenshots/home.png
-[Photos]:https://raw.githubusercontent.com/0x1001/Webcam/master/screenshots/photos.png
 [Movements list]:https://raw.githubusercontent.com/0x1001/Webcam/master/screenshots/movements.png
 [Webcam device]:https://raw.githubusercontent.com/0x1001/Webcam/master/screenshots/IMG_20150426_144456.jpg
 
