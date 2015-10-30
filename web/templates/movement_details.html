@@ -18,8 +18,7 @@
     Recorded for {{ movement.recording.lenght }} seconds
     <hr>
     <div class="embed-responsive embed-responsive-16by9">
-      <video class="embed-responsive-item" controls>
-        <source src="{% static movement.recording.name %}" type="video/mp4">
+      <video class="embed-responsive-item" preload="metadata" src="{% static movement.recording.name %}" controls>
         <span class="label label-danger">Your browser does not support the video.</span>
       </video>
     </div>

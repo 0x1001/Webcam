@@ -1,5 +1,5 @@
 Next:
 - Change pagination to reflect occurrence time instead of movements count
 - Configuration via page
-- Add autorefresh to live stream page that accounts for sudden breaks in connection
 - Add password protection for configuration page
+- Fix video player which gets stuck when  moving slider
