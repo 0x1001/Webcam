@@ -78,6 +78,10 @@ class Storage(object):
                 print "Cannot delete: " + path + " Error: " + str(error)
                 raise StorageException(error)
 
+            if os.path.isfile(path):
+                print "File was not deleted! But there wasn't any excpetion from OS! " + path
+                raise StorageException()
+
     def _remove_recording_from_database(self, name):
         from home.models import remove_recording
 
