@@ -42,6 +42,8 @@ class Storage(object):
             self._remove_photo_from_database(name)
 
     def delete_movement(self, movement):
+        self.delete_photo(movement.photo.name, movement.photo.thumbnail)
+        self.delete_recording(movement.recording.name)
         self._remove_movement_from_database(movement)
 
     def save_photo(self, photo):
@@ -92,10 +94,10 @@ class Storage(object):
 
         remove_photo(name)
 
-    def _remove_movement_from_database(self, name):
+    def _remove_movement_from_database(self, movement):
         from home.models import remove_movement
 
-        remove_movement(name)
+        remove_movement(movement.id)
 
     def _save_recording(self, recording):
         from webcam import settings

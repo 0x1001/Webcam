@@ -109,7 +109,7 @@ class RPiWebcam(webcambase.WebcamBase):
     def _delete_oldest_movements(self):
         movements = self._storage.get_all_movements()
         for m in movements[_MAX_MOVEMENTS_COUNT:]:
-            self._storage.delete_movement(m.id)
+            self._storage.delete_movement(m)
 
     def _exit(self):
         return self._exit_event.is_set()

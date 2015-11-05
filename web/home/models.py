@@ -70,7 +70,6 @@ def remove_recording(name):
 def remove_photo(name):
     with dblock.DBLock():
         p = _get_no_photo()
-
         Movement.objects.filter(photo__name=name).update(photo=p)
         Photo.objects.filter(name=name).delete()
 
