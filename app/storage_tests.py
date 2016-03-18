@@ -56,6 +56,9 @@ class Test_Storage(unittest.TestCase):
         s = storage.Storage()
         s.get_all_recordings()
 
+    def test_get_free_space(self):
+        s = storage.Storage()
+        s.disk_free_space()
 
 if __name__ == "__main__":
     unittest.main()

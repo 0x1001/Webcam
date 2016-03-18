@@ -1,6 +1,7 @@
 class StorageException(Exception):
     pass
 
+
 class Storage(object):
     def __init__(self):
         self._init_django()
@@ -73,6 +74,13 @@ class Storage(object):
 
     def save_motion(self, recording, photo):
         self._add_motion_to_database(recording, photo)
+
+    def disk_free_space(self):
+        from webcam import settings
+        import os
+
+        disk_stat = os.statvfs(settings.STATICFILES_DIRS[0])
+        return (disk_stat.f_bavail * disk_stat.f_frsize) / 1024 / 1024
 
     def _delete(self, root, name):
         import os

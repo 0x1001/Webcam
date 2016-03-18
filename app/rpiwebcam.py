@@ -3,18 +3,7 @@ import webcambase
 _WAIT_TIME = 0.2
 _MAX_RECORD_TIME = 30
 _STREAM_SIZE = 640, 360
-
-#_MAX_RECORDINGS_COUNT = 150
-#_MAX_PHOTOS_COUNT = 300
-#_MAX_MOVEMENTS_COUNT = 1000
-
-#_MAX_RECORDINGS_COUNT = 4000
-#_MAX_PHOTOS_COUNT = 8000
-#_MAX_MOVEMENTS_COUNT = 8000
-
-_MAX_RECORDINGS_COUNT = 1800
-_MAX_PHOTOS_COUNT = 1800
-_MAX_MOVEMENTS_COUNT = 1800
+_MIN_FREE_STORAGE_SPACE = 200
 
 
 class RPiWebcam(webcambase.WebcamBase):
@@ -96,20 +85,12 @@ class RPiWebcam(webcambase.WebcamBase):
 
         threading.Thread(target=_do).start()
 
-    def _delete_oldest_recordings(self):
-        recordings = self._storage.get_all_recordings()
-        for r in recordings[_MAX_RECORDINGS_COUNT:]:
-            self._storage.delete_recording(r.name)
-
-    def _delete_oldest_photos(self):
-        photos = self._storage.get_all_photos()
-        for p in photos[_MAX_PHOTOS_COUNT:]:
-            self._storage.delete_photo(p.name, p.thumbnail)
-
     def _delete_oldest_movements(self):
         movements = self._storage.get_all_movements()
-        for m in movements[_MAX_MOVEMENTS_COUNT:]:
-            self._storage.delete_movement(m)
+        for m in movements[::-1]:
+            available_storage = self._storage.disk_free_space()
+            if available_storage < _MIN_FREE_STORAGE_SPACE:
+                self._storage.delete_movement(m)
 
     def _exit(self):
         return self._exit_event.is_set()
