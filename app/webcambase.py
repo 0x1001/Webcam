@@ -13,7 +13,7 @@ class WebcamBase(object):
     def clean(self):
         while not self._exit():
             self._delete_oldest_movements()
-            self._wait(600)
+            self._wait(120)
 
     def config(self):
         while not self._exit():

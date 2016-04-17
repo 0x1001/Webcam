@@ -78,8 +78,12 @@ class Storage(object):
     def disk_free_space(self):
         from webcam import settings
         import os
+        
+        try:
+            disk_stat = os.statvfs(settings.STATICFILES_DIRS[0])
+        except OSError as error:
+            raise StorageException(error)
 
-        disk_stat = os.statvfs(settings.STATICFILES_DIRS[0])
         return (disk_stat.f_bavail * disk_stat.f_frsize) / 1024 / 1024
 
     def _delete(self, root, name):

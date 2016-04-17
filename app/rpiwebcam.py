@@ -86,9 +86,16 @@ class RPiWebcam(webcambase.WebcamBase):
         threading.Thread(target=_do).start()
 
     def _delete_oldest_movements(self):
+        import storage
+
         movements = self._storage.get_all_movements()
         for m in movements[::-1]:
-            available_storage = self._storage.disk_free_space()
+            try:
+                available_storage = self._storage.disk_free_space()
+            except storage.StorageException as error:
+                print "Cannot read disk space! Error: " + str(error)
+                break
+
             if available_storage < _MIN_FREE_STORAGE_SPACE:
                 self._storage.delete_movement(m)
 
